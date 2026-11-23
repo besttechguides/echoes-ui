@@ -141,6 +141,11 @@ p{margin:0 0 12px}
         </ul>
       </div>
     </div>
+    <div class="card soft" style="margin-top:16px;border-color:rgba(139,92,246,.35)">
+      <h2>Just want to see it?</h2>
+      <p class="notice">Try a complete sample memorial — Margaret, her answers, her voice sample and a conversation already under way. Nothing to fill in, nothing saved.</p>
+      <button class="btn" style="margin-top:8px" onclick="openSample()">Try the sample person →</button>
+    </div>
     <div class="card guard" style="margin-top:16px">
       <h2>What has to be true for this to be okay</h2>
       <ul>
@@ -188,6 +193,7 @@ p{margin:0 0 12px}
         <div class="fieldgrid" id="questionnaire"></div>
         <div class="row" style="margin-top:18px">
           <button class="btn ghost" onclick="capStep(1)">← Back</button>
+          <button class="btn ghost" id="fillSample" type="button">Fill with sample answers</button>
           <span class="spacer"></span>
           <button class="btn" onclick="capStep(3)">Answers done — record her voice →</button>
         </div>
@@ -247,8 +253,9 @@ p{margin:0 0 12px}
     <div id="mem-open" style="display:none">
       <div class="head" style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:16px">
         <div>
-          <h1>Mum</h1>
+          <h1 id="memName">Mum</h1>
           <span class="badge">● AI memorial, based on your memories</span>
+          <span class="badge" id="sampleTag" style="display:none;border-color:rgba(245,158,11,.45);color:#fde68a;background:rgba(180,83,9,.25)">● Sample person — demo data</span>
         </div>
         <button class="link" id="crisisDemo">Preview crisis banner</button>
       </div>
@@ -276,9 +283,15 @@ p{margin:0 0 12px}
           <h3>Always visible</h3>
           <p class="notice">The badge stays on every reply, in text and in speech. This is a simulation built from her answers — never her actually speaking.</p>
           <ul class="notice"><li>Her voice sample is never downloadable.</li><li>Crisis turns never reach the model.</li><li>Helplines are always one click away.</li></ul>
+          <div id="sampleFacts" style="display:none;border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
+            <h3>The sample person</h3>
+            <p class="notice">Margaret, 74. Loved her garden, strong tea and a dry joke. Not a real person — all demo data.</p>
+            <ul class="notice"><li>Favourite meal: Sunday roast</li><li>Always said: "Make yourself at home"</li><li>Laughed at her own terrible puns</li></ul>
+          </div>
           <p style="margin-top:14px"><button class="link" onclick="go('support')">Support &amp; helplines →</button></p>
           <p><button class="link" id="deleteAll" style="color:var(--danger)">Delete voice and all answers</button></p>
           <p><button class="link" id="relock">Re-lock the memorial (test)</button></p>
+          <p><button class="link" id="exitSample" style="display:none">Leave the sample →</button></p>
         </aside>
       </div>
     </div>
@@ -336,6 +349,47 @@ p{margin:0 0 12px}
     ]}
   ];
 
+  var SAMPLE = {
+    answers: {
+      'Full name':'Margaret Ellen Shaw',
+      'Nickname':'Nan',
+      'Date of birth':'12 March 1952',
+      'Where she grew up':'A terraced street in Leeds, near the park',
+      'Languages or accent':'Yorkshire, broad as anything when she got excited',
+      'Favourite meal':'Sunday roast with all the trimmings',
+      'What she cooked for you':'Onion pie and chip butties on a Friday',
+      'Her tea or coffee order':'Strong tea, two sugars, a splash of milk',
+      'Treats she loved':'Chocolate digestive, dunked but not too long',
+      'Foods she could not stand':'Soggy cabbage and anything fancy',
+      'A recipe in her own words':'Onions, lots of them. Potato. Tea. You know the rest.',
+      'Things she always said':"Make yourself at home, Don't be daft, Put the kettle on",
+      'How she greeted family':'Well hello, love. Get yourself in.',
+      'How she laughed':'A proper belly laugh at her own jokes',
+      'Words of affection':'Love, pet, our kid',
+      'Phrases that annoyed her':'When you said "whatever"',
+      'Daily routine':'Up at six, garden, tea, the crossword, tea again',
+      'Hobbies and habits':'Gardening, crosswords, feeding the birds',
+      'Music she loved':'The Beatles, and anything with a good chorus',
+      'TV and films':'Any murder mystery, twice',
+      'Pets':'A cat called Trevor who ruled the house',
+      'Her work':'School secretary for thirty years, loved every minute',
+      'Three words to describe her':'Warm, stubborn, funny',
+      'What made her laugh':'Her own terrible puns',
+      'What made her cross':'Being kept waiting',
+      'How she showed love':'Fed you until you could not move',
+      'Her advice':'Make the most of a good cup of tea',
+      'A favourite memory':'The summer the tomatoes finally ripened and she declared herself a genius',
+      'A family story':'The time she locked herself out in her dressing gown',
+      'A time she was proud':'Watching you get on the bus on your first day of school',
+      'A time she was sad':'She never said much, just made you a sandwich',
+      'What she would say to you now':"I'd tell you to stop worrying and eat something",
+      'What mattered most':'Family, a tidy garden, and fairness',
+      'What she was proud of':'Keeping that garden going through three winters',
+      'What she hoped for you':'That you look after yourself',
+      'How she want to be remembered':'As the one who always put the kettle on'
+    }
+  };
+
   var q = document.getElementById('questionnaire');
   FIELD_GROUPS.forEach(function(g){
     var h = document.createElement('div');
@@ -348,10 +402,16 @@ p{margin:0 0 12px}
       var id = 'f'+Math.random().toString(36).slice(2,8);
       var lab = document.createElement('label'); lab.htmlFor = id; lab.textContent = f[0];
       var el = document.createElement(/recipe|memory|story|routine|advice|remembered|say to you/i.test(f[0]) ? 'textarea' : 'input');
-      el.id = id; el.placeholder = f[1];
+      el.id = id; el.placeholder = f[1]; el.dataset.label = f[0];
       wrap.appendChild(lab); wrap.appendChild(el); q.appendChild(wrap);
     });
   });
+
+  function fillSampleAnswers(){
+    Array.prototype.forEach.call(q.querySelectorAll('input,textarea'), function(el){
+      el.value = SAMPLE.answers[el.dataset.label] || '';
+    });
+  }
 
   var boxes = ['c1','c2','c3','c4','c5'].map(function(id){ return document.getElementById(id); });
   function checkConsent(){
@@ -383,6 +443,7 @@ p{margin:0 0 12px}
   }
   window.capStep = capStep;
   document.getElementById('toAnswers').addEventListener('click', function(){ capStep(2); });
+  document.getElementById('fillSample').addEventListener('click', function(){ fillSampleAnswers(); });
 
   var waveEl = document.getElementById('wave');
   for (var i=0;i<22;i++){ var b=document.createElement('i'); b.style.height=(6+Math.random()*16)+'px'; waveEl.appendChild(b); }
@@ -411,28 +472,93 @@ p{margin:0 0 12px}
     btn.addEventListener('click', function(){ go(btn.dataset.view); });
   });
 
-  var gate = document.getElementById('openGate');
-  gate.addEventListener('click', function(){
+  function showMemorial(){
     document.getElementById('mem-locked').style.display='none';
     document.getElementById('mem-open').style.display='block';
     window.scrollTo(0,0);
-  });
+  }
+
+  var gate = document.getElementById('openGate');
+  gate.addEventListener('click', showMemorial);
   document.getElementById('relock').addEventListener('click', function(){
     document.getElementById('mem-open').style.display='none';
     document.getElementById('mem-locked').style.display='block';
     window.scrollTo(0,0);
   });
+  document.getElementById('exitSample').addEventListener('click', exitSample);
 
   var thread = document.getElementById('thread');
+  var defaultThreadHTML = thread.innerHTML;
+  var isSample = false;
+
   function bubble(role, text){
     var el=document.createElement('div'); el.className='bubble '+(role==='user'?'user':'ai'); el.textContent=text;
     if(role==='ai'){ var s=document.createElement('small'); s.textContent='🕊️ AI memorial, based on your memories · Hear this reply'; el.appendChild(s); }
     thread.appendChild(el); thread.scrollTop=thread.scrollHeight;
   }
+
+  function loadSampleThread(){
+    thread.innerHTML='';
+    bubble('ai','Hello love. Put the kettle on, and tell me what you have been up to.');
+    bubble('user','What would you have made for tea?');
+    bubble('ai',"You know me — something with onions in it, and far too much pepper. I would have told you to sit down while I did it.");
+    bubble('user','And how are the tomatoes?');
+    bubble('ai','Finally ripe, thank goodness. I have told the whole street I am a genius. Do not tell them otherwise.');
+  }
+
+  function markSampleVoice(){
+    voiceStatus.dataset.ready='1'; voiceStatus.className='ok';
+    voiceStatus.textContent='Sample voice ready (demo only) — Margaret Shaw';
+    waveEl.classList.add('live');
+  }
+
+  function openSample(){
+    isSample = true;
+    boxes.forEach(function(b){ b.checked = true; }); checkConsent();
+    fillSampleAnswers();
+    markSampleVoice();
+    document.getElementById('memName').textContent = 'Nan (Margaret)';
+    document.getElementById('sampleTag').style.display = 'inline-block';
+    document.getElementById('sampleFacts').style.display = 'block';
+    document.getElementById('exitSample').style.display = 'inline';
+    capStep(4);
+    document.getElementById('rvAnswers').textContent = Object.keys(SAMPLE.answers).length + ' fields answered (sample)';
+    document.getElementById('rvVoice').textContent = 'Sample voice ready (demo only)';
+    loadSampleThread();
+    showMemorial();
+  }
+
+  function exitSample(){
+    isSample = false;
+    boxes.forEach(function(b){ b.checked = false; }); checkConsent();
+    Array.prototype.forEach.call(q.querySelectorAll('input,textarea'), function(el){ el.value = ''; });
+    voiceStatus.dataset.ready=''; voiceStatus.className='notice'; voiceStatus.textContent='No sample chosen yet.';
+    waveEl.classList.remove('live');
+    document.getElementById('memName').textContent = 'Mum';
+    document.getElementById('sampleTag').style.display = 'none';
+    document.getElementById('sampleFacts').style.display = 'none';
+    document.getElementById('exitSample').style.display = 'none';
+    thread.innerHTML = defaultThreadHTML;
+    document.getElementById('mem-open').style.display='none';
+    document.getElementById('mem-locked').style.display='block';
+    capStep(1);
+    go('overview');
+  }
+
+  window.openSample = openSample;
+  window.exitSample = exitSample;
+
   function replyFor(text){
     if(/kill myself|want to die|end my life|hurt myself/i.test(text)){
       document.getElementById('crisis').classList.add('show');
       return 'I am an AI memorial, and I want you safe. Please ring Samaritans on 116 123 or text SHOUT to 85258. You should not have to face this on your own.';
+    }
+    if(isSample){
+      if(/tea|kettle|drink/i.test(text)) return 'Strong tea, two sugars, a splash of milk. I have already put the kettle on, so sit yourself down.';
+      if(/garden|tomato|flower|weed/i.test(text)) return 'The tomatoes are doing nicely now. I have been telling everyone it is a gift, though really I just kept watering them.';
+      if(/name|who are you/i.test(text)) return 'Margaret Ellen Shaw — but everyone calls me Nan. Do not you dare call me Margaret Ellen.';
+      if(/onion|recipe|cook|tea/i.test(text)) return 'Onions, lots of them. Potato. Tea. You know the rest. And no, I am not measuring anything.';
+      return 'Well hello, love. Come in, sit yourself down, and tell me what you have been up to.';
     }
     return 'I remember you saying that. Come in, sit down — I will put the kettle on and we can talk about it properly.';
   }
