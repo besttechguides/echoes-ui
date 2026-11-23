@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Echoes — capture her voice, keep her stories</title>
+<style>
+:root{
+  --bg:#0a0a0a; --panel:#141414; --panel2:#1b1b1b; --line:#2b2b2b;
+  --text:#f5f5f5; --muted:#a8a8a8; --dim:#767676;
+  --accent:#a78bfa; --accentStrong:#7c3aed; --danger:#f87171;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;line-height:1.55}
+button,input,textarea{font:inherit}
+nav{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);background:rgba(20,20,20,.94);position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:8px;font-weight:600;color:var(--accent);white-space:nowrap}
+.brand span{font-size:20px}
+.navlinks{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.navlinks button{background:none;border:0;color:var(--muted);cursor:pointer;padding:6px 3px;font-size:13px}
+.navlinks button.active{color:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:22px 18px 40px}
+.view{display:none}.view.active{display:block}
+h1{font-size:26px;font-weight:400;margin:0 0 10px;line-height:1.25}
+h2{font-size:16px;font-weight:600;margin:0 0 8px}
+p{margin:0 0 12px}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(76,29,149,.35);color:#ddd6fe;border:1px solid rgba(139,92,246,.3);border-radius:999px;padding:4px 11px;font-size:11px;font-weight:500}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px}
+.card.soft{background:var(--panel2)}
+.hero{text-align:center;padding:30px 0 16px}
+.hero p.lede{max-width:640px;margin:14px auto 0;color:var(--muted);font-size:16px}
+.timeline{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+.phase{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--panel);text-align:left}
+.phase .num{color:var(--accent);font-size:11px;letter-spacing:.12em;text-transform:uppercase;font-weight:600}
+.phase h2{margin-top:6px}
+.phase ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px}
+.phase li{margin:4px 0}
+.notice{font-size:12px;color:var(--dim)}
+.guard{border-color:rgba(139,92,246,.35);background:rgba(76,29,149,.12)}
+.guard strong{color:#ddd6fe}
+.guard ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:13px}
+.btn{background:var(--accentStrong);color:#fff;border:0;border-radius:8px;padding:10px 17px;cursor:pointer;font-weight:600;font-size:13px}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.steps{display:flex;gap:6px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+.step{font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:999px;padding:4px 10px}
+.step.on{color:#ddd6fe;border-color:var(--accentStrong);background:rgba(124,58,237,.18)}
+.step.done{color:#a7f3d0;border-color:rgba(16,185,129,.4)}
+.consent{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted);cursor:pointer}
+.consent:last-of-type{border-bottom:0}
+.consent input{margin-top:3px;accent-color:var(--accentStrong);width:16px;height:16px;flex:none}
+.consent b{color:var(--text);font-weight:600}
+.fieldgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field.wide{grid-column:1/-1}
+.field label{font-size:12px;color:var(--muted)}
+.field input,.field textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--text);outline:none;resize:vertical}
+.field textarea{min-height:62px}
+.field input:focus,.field textarea:focus{border-color:var(--accentStrong)}
+.sectionhead{grid-column:1/-1;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.sectionhead:first-child{margin-top:0;padding-top:0;border-top:0}
+.sectionhead h2{color:var(--accent)}
+.sectionhead p{margin:2px 0 0;font-size:12px;color:var(--dim)}
+.drop{border:1px dashed #444;border-radius:10px;padding:22px;text-align:center;background:var(--panel2)}
+.drop input{display:none}
+.wave{display:flex;gap:3px;align-items:flex-end;justify-content:center;height:38px;margin:10px 0 4px}
+.wave i{width:4px;background:var(--accent);border-radius:3px;height:8px;opacity:.85}
+.wave.live i{animation:pulse 1s ease-in-out infinite alternate}
+.wave.live i:nth-child(2n){animation-delay:.15s}.wave.live i:nth-child(3n){animation-delay:.3s}
+@keyframes pulse{from{height:6px;opacity:.5}to{height:36px;opacity:1}}
+.ok{color:#a7f3d0;font-size:13px}
+.review{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.review div{border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13px}
+.review b{display:block;color:var(--accent);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.gate{text-align:center;padding:34px 20px}
+.gate .lock{font-size:34px}
+.gate h1{margin-top:10px}
+.gate p{max-width:520px;margin:0 auto 18px;color:var(--muted)}
+.chat{display:flex;flex-direction:column;min-height:330px}
+.thread{flex:1;display:flex;flex-direction:column;gap:11px;padding:4px 0 14px;max-height:360px;overflow:auto}
+.bubble{max-width:84%;padding:10px 14px;border-radius:16px;white-space:pre-wrap}
+.user{align-self:flex-end;background:rgba(124,58,237,.22);border-bottom-right-radius:4px}
+.ai{align-self:flex-left;align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.ai small{display:block;margin-top:8px;color:var(--accent);font-size:11px}
+.crisis{display:none;background:rgba(69,10,10,.55);border:1px solid rgba(239,68,68,.35);color:#fecaca;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.crisis.show{display:block}
+.crisis strong{color:#fff}
+.crisis ul{margin:8px 0 0;padding-left:18px}
+.micbar{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:14px}
+.mic{width:46px;height:46px;border-radius:50%;border:1px solid var(--accentStrong);background:rgba(124,58,237,.2);color:#ddd6fe;cursor:pointer;font-size:18px;flex:none}
+.mic.on{background:var(--accentStrong);box-shadow:0 0 0 6px rgba(124,58,237,.18)}
+.miclabel{color:var(--muted);font-size:13px}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted);font-size:12px;margin:0 6px 6px 0}
+.link{color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;font-size:12px}
+.saved{border-color:rgba(16,185,129,.4)}
+@media(max-width:700px){.timeline,.fieldgrid,.review{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand"><span>🕊️</span> Echoes</div>
+  <div class="navlinks">
+    <button data-view="overview" class="active">Overview</button>
+    <button data-view="capture">Phase 1 · Capture</button>
+    <button data-view="memorial">Phase 2 · Memorial</button>
+    <button data-view="support">Support</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- OVERVIEW -->
+  <section id="view-overview" class="view active">
+    <div class="hero">
+      <span class="badge">● AI memorial, based on your memories</span>
+      <h1 style="margin-top:16px">Her voice. Her stories. Kept with love.</h1>
+      <p class="lede">Echoes has two phases. While she's here, she fills in her own questions and records her voice. Only when you choose to open the memorial does it become a voice conversation you can return to.</p>
+    </div>
+    <div class="timeline">
+      <div class="phase">
+        <div class="num">Phase 1 · While she's here</div>
+        <h2>Capture, with her permission</h2>
+        <ul>
+          <li>She reads and agrees to a clear consent page.</li>
+          <li>She fills in the questions herself — foods, sayings, stories, routine.</li>
+          <li>She records a short voice sample in her own words.</li>
+          <li>Everything stays locked away until you need it.</li>
+        </ul>
+      </div>
+      <div class="phase">
+        <div class="num">Phase 2 · When the time comes</div>
+        <h2>Talk, with eyes open</h2>
+        <ul>
+          <li>You deliberately switch the memorial on.</li>
+          <li>Voice conversations use her sample — clearly labelled as AI every time.</li>
+          <li>Crisis language is caught before the AI replies.</li>
+          <li>You can delete the voice and every answer in one action.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card guard" style="margin-top:16px">
+      <h2>What has to be true for this to be okay</h2>
+      <ul>
+        <li><strong>She consents while she is alive</strong>, knowing exactly what is being made and that it will speak after her death.</li>
+        <li><strong>It never pretends to be her.</strong> A permanent "AI memorial" badge shows in text and speech.</li>
+        <li><strong>No raw voice is downloadable or exported.</strong> The sample stays with the provider only.</li>
+        <li><strong>She can withdraw and have everything deleted at any time.</strong></li>
+      </ul>
+    </div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn" onclick="go('capture')">Start with her consent →</button>
+      <span class="notice">Preview only — nothing here is recorded or sent.</span>
+    </div>
+  </section>
+
+  <!-- CAPTURE -->
+  <section id="view-capture" class="view">
+    <div class="steps">
+      <span class="step on" id="s1">1 · Consent</span>
+      <span class="step" id="s2">2 · Her answers</span>
+      <span class="step" id="s3">3 · Voice sample</span>
+      <span class="step" id="s4">4 · Saved</span>
+    </div>
+
+    <div id="cap-1">
+      <div class="card">
+        <h1>For her to fill in, while she's here</h1>
+        <p class="notice">Best if she reads this herself. It is her voice and her story.</p>
+        <label class="consent"><input type="checkbox" id="c1" /><span><b>I understand this makes an AI simulation.</b> It is not me, and it will not be me after I die.</span></label>
+        <label class="consent"><input type="checkbox" id="c2" /><span><b>I agree to my voice being sampled</b> so the memorial can speak in my voice. I know no one can download the raw recording.</span></label>
+        <label class="consent"><input type="checkbox" id="c3" /><span><b>I agree to my answers being kept</b> and used to shape how the memorial talks, with an AI badge always shown.</span></label>
+        <label class="consent"><input type="checkbox" id="c4" /><span><b>I know I can change my mind</b> and have the voice and all my answers deleted while I am alive.</span></label>
+        <label class="consent"><input type="checkbox" id="c5" /><span><b>I understand who can open it.</b> The memorial stays locked until my family chooses to switch it on after I'm gone.</span></label>
+        <div class="row" style="margin-top:16px">
+          <button class="btn" id="toAnswers" disabled>She agrees — go to her questions →</button>
+          <span class="notice" id="consentHint">Tick all five to continue.</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="cap-2" style="display:none">
+      <div class="card">
+        <h1>Tell us about her — in her own words</h1>
+        <p class="notice">She fills this in. The more detail, the truer the memorial sounds. Nothing is public.</p>
+        <div class="fieldgrid" id="questionnaire"></div>
+        <div class="row" style="margin-top:18px">
+          <button class="btn ghost" onclick="capStep(1)">← Back</button>
+          <span class="spacer"></span>
+          <button class="btn" onclick="capStep(3)">Answers done — record her voice →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="cap-3" style="display:none">
+      <div class="card">
+        <h1>A short recording in her voice</h1>
+        <p class="notice">30–60 seconds in a quiet room works best. Ask her to read a few lines of something she'd actually say, or just tell a story.</p>
+        <div class="drop">
+          <div class="wave" id="wave"></div>
+          <p id="voiceStatus" class="notice">No sample chosen yet.</p>
+          <button class="btn ghost" id="recBtn" type="button">Simulate a recording</button>
+          <label class="btn" style="display:inline-block;margin-left:8px">Choose an audio file<input type="file" id="voiceFile" accept="audio/*" /></label>
+        </div>
+        <p class="notice" style="margin-top:12px">Preview behaviour: the file stays in this browser tab. In the real app it goes straight to the voice provider and is never stored as a downloadable file.</p>
+        <div class="row" style="margin-top:16px">
+          <button class="btn ghost" onclick="capStep(2)">← Back</button>
+          <span class="spacer"></span>
+          <button class="btn" id="finishCap">Save her memorial →</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="cap-4" style="display:none">
+      <div class="card saved">
+        <span class="badge">● Saved in safekeeping</span>
+        <h1 style="margin-top:14px">Her memorial is ready, and locked.</h1>
+        <p class="notice">Nothing can be heard yet. The voice and answers stay sealed until you deliberately open Phase 2.</p>
+        <div class="review">
+          <div><b>Voice sample</b><span id="rvVoice">Not provided</span></div>
+          <div><b>Questions answered</b><span id="rvAnswers">0 fields</span></div>
+          <div><b>Consent</b>Recorded — all five agreements</div>
+          <div><b>Status</b>Locked · not searchable · not public</div>
+        </div>
+        <div class="row" style="margin-top:18px">
+          <button class="btn ghost" onclick="capStep(2)">Edit her answers</button>
+          <button class="btn" onclick="go('memorial')">Go to the memorial →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEMORIAL -->
+  <section id="view-memorial" class="view">
+    <div id="mem-locked">
+      <div class="card gate">
+        <div class="lock">🔒</div>
+        <h1>Test mode — open it now</h1>
+        <p>For testing, the memorial opens straight away. In real use this button sits behind a second confirmation so it can only be opened deliberately.</p>
+        <button class="btn" id="openGate">Open the memorial — test now →</button>
+        <p class="notice" style="margin-top:14px">Preview only: replies are canned and the microphone is simulated.</p>
+      </div>
+    </div>
+
+    <div id="mem-open" style="display:none">
+      <div class="head" style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:16px">
+        <div>
+          <h1>Mum</h1>
+          <span class="badge">● AI memorial, based on your memories</span>
+        </div>
+        <button class="link" id="crisisDemo">Preview crisis banner</button>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:16px">
+        <div class="card chat">
+          <div id="crisis" class="crisis">
+            <strong>You deserve support from a real person</strong>
+            <ul><li>Samaritans — 116 123 (24/7, free)</li><li>SHOUT — text 85258</li><li>Papyrus — 0800 068 4141</li></ul>
+          </div>
+          <div class="thread" id="thread">
+            <div class="bubble ai">Hello love. Put the kettle on, and tell me what you've been up to. <small>🕊️ AI memorial, based on your memories · Hear this reply</small></div>
+            <div class="bubble user">What would you have made for tea?</div>
+            <div class="bubble ai">You know me — something with onions in it, and far too much pepper. I'd have told you to sit down while I did it. <small>🕊️ AI memorial, based on your memories · Hear this reply</small></div>
+          </div>
+          <div class="micbar">
+            <button class="mic" id="mic" title="Speak">🎙</button>
+            <span class="miclabel" id="micLabel">Tap to speak — or type below</span>
+          </div>
+          <form class="row" id="composer" style="margin-top:12px">
+            <input id="msg" class="field" style="flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--text)" placeholder="Or write a message…" />
+            <button class="btn" type="submit">Send</button>
+          </form>
+        </div>
+        <aside class="card">
+          <h3>Always visible</h3>
+          <p class="notice">The badge stays on every reply, in text and in speech. This is a simulation built from her answers — never her actually speaking.</p>
+          <ul class="notice"><li>Her voice sample is never downloadable.</li><li>Crisis turns never reach the model.</li><li>Helplines are always one click away.</li></ul>
+          <p style="margin-top:14px"><button class="link" onclick="go('support')">Support &amp; helplines →</button></p>
+          <p><button class="link" id="deleteAll" style="color:var(--danger)">Delete voice and all answers</button></p>
+          <p><button class="link" id="relock">Re-lock the memorial (test)</button></p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPORT -->
+  <section id="view-support" class="view">
+    <h1>Support &amp; helplines</h1>
+    <span class="badge">● AI memorial, based on your memories</span>
+    <div class="card" style="margin-top:16px;max-width:720px">
+      <p>Echoes is not a crisis service or a substitute for people. If you need someone now, these are free and confidential.</p>
+      <p><span class="pill">Samaritans · 116 123 · 24/7</span><span class="pill">SHOUT · text 85258</span><span class="pill">Papyrus · 0800 068 4141</span><span class="pill">Mind · 0300 123 3393</span></p>
+      <p><span class="pill">988 (US) · call or text 988</span><span class="pill">Crisis Text Line · text HOME to 741741</span></p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function(){
+  var FIELD_GROUPS = [
+    { title:'Her basics', sub:'The small facts that make her real.', fields:[
+      ['Full name','e.g. Joan Mary Ellis'],['Nickname','What everyone called her'],
+      ['Date of birth','Any format she likes'],['Where she grew up','Town, street, house if she wants'],
+      ['Languages or accent','Any words only family says']
+    ]},
+    { title:'Food & drink', sub:'Her answer to "what\'s for tea?"', fields:[
+      ['Favourite meal','The one she always chose'],['What she cooked for you','A dish people remember'],
+      ['Her tea or coffee order','Exactly how she took it'],['Treats she loved','Sweet, savoury, anything'],
+      ['Foods she could not stand','Be honest'],['A recipe in her own words','How much of each? No measuring.']
+    ]},
+    { title:'Her words', sub:'The phrases you would recognise anywhere.', fields:[
+      ['Things she always said','Comma separated'],['How she greeted family','Her actual first line'],
+      ['How she laughed','What set her off'],['Words of affection','What she called you'],
+      ['Phrases that annoyed her','The ones you used to wind her up']
+    ]},
+    { title:'Everyday life', sub:'The rhythm of her days.', fields:[
+      ['Daily routine','Morning through to bed'],['Hobbies and habits','Garden, puzzles, walking…'],
+      ['Music she loved','Artists, songs, the radio station'],['TV and films','What she watched twice'],
+      ['Pets','Names and personalities'],['Her work','What she did, and how she felt about it']
+    ]},
+    { title:'Her character', sub:'How she came across to people.', fields:[
+      ['Three words to describe her','Warm, stubborn, funny…'],['What made her laugh','The stupidest thing that worked'],
+      ['What made her cross','What you learned to avoid'],['How she showed love','Not always with words'],
+      ['Her advice','The line she repeated most']
+    ]},
+    { title:'Stories', sub:'The ones worth keeping.', fields:[
+      ['A favourite memory','A whole scene if she can'],['A family story','The one told at every gathering'],
+      ['A time she was proud','Her words, not yours'],['A time she was sad','Only what she wants kept'],
+      ['What she would say to you now','Imagine you are in the kitchen together']
+    ]},
+    { title:'What mattered', sub:'The values behind the answers.', fields:[
+      ['What mattered most','Family, faith, fairness…'],['What she was proud of','Big or small'],
+      ['What she hoped for you','Her real hope'],['How she want to be remembered','One sentence in her voice']
+    ]}
+  ];
+
+  var q = document.getElementById('questionnaire');
+  FIELD_GROUPS.forEach(function(g){
+    var h = document.createElement('div');
+    h.className = 'sectionhead';
+    h.innerHTML = '<h2>'+g.title+'</h2><p>'+g.sub+'</p>';
+    q.appendChild(h);
+    g.fields.forEach(function(f){
+      var wrap = document.createElement('div');
+      wrap.className = 'field' + (/recipe|memory|story|routine|advice|remembered|say to you/i.test(f[0]) ? ' wide' : '');
+      var id = 'f'+Math.random().toString(36).slice(2,8);
+      var lab = document.createElement('label'); lab.htmlFor = id; lab.textContent = f[0];
+      var el = document.createElement(/recipe|memory|story|routine|advice|remembered|say to you/i.test(f[0]) ? 'textarea' : 'input');
+      el.id = id; el.placeholder = f[1];
+      wrap.appendChild(lab); wrap.appendChild(el); q.appendChild(wrap);
+    });
+  });
+
+  var boxes = ['c1','c2','c3','c4','c5'].map(function(id){ return document.getElementById(id); });
+  function checkConsent(){
+    var n = boxes.filter(function(b){ return b.checked; }).length;
+    document.getElementById('toAnswers').disabled = n < 5;
+    document.getElementById('consentHint').textContent = n < 5 ? (5-n)+' more to tick.' : 'Thank you. She can change her mind at any time.';
+  }
+  boxes.forEach(function(b){ b.addEventListener('change', checkConsent); });
+
+  function go(view){
+    document.querySelectorAll('.view').forEach(function(v){ v.classList.toggle('active', v.id === 'view-'+view); });
+    document.querySelectorAll('[data-view]').forEach(function(b){ b.classList.toggle('active', b.dataset.view === view); });
+    window.scrollTo(0,0);
+  }
+  window.go = go;
+
+  function capStep(n){
+    for (var i=1;i<=4;i++) document.getElementById('cap-'+i).style.display = (i===n?'block':'none');
+    for (var j=1;j<=4;j++){
+      var el = document.getElementById('s'+j);
+      el.classList.toggle('on', j===n); el.classList.toggle('done', j<n);
+    }
+    if (n===4){
+      var filled = Array.prototype.filter.call(q.querySelectorAll('input,textarea'), function(el){ return el.value.trim().length>0; }).length;
+      document.getElementById('rvAnswers').textContent = filled+' fields answered';
+      document.getElementById('rvVoice').textContent = document.getElementById('voiceStatus').dataset.ready ? 'Voice sample ready (preview)' : 'Not provided';
+    }
+    window.scrollTo(0,0);
+  }
+  window.capStep = capStep;
+  document.getElementById('toAnswers').addEventListener('click', function(){ capStep(2); });
+
+  var waveEl = document.getElementById('wave');
+  for (var i=0;i<22;i++){ var b=document.createElement('i'); b.style.height=(6+Math.random()*16)+'px'; waveEl.appendChild(b); }
+  var voiceStatus = document.getElementById('voiceStatus');
+  document.getElementById('recBtn').addEventListener('click', function(){
+    waveEl.classList.add('live');
+    voiceStatus.textContent = 'Recording… 30s is plenty.';
+    var self = this; self.disabled = true;
+    window.setTimeout(function(){
+      waveEl.classList.remove('live');
+      voiceStatus.dataset.ready='1';
+      voiceStatus.className='ok';
+      voiceStatus.textContent='Sample ready (simulated preview).';
+      self.disabled=false;
+    }, 2600);
+  });
+  document.getElementById('voiceFile').addEventListener('change', function(){
+    if (!this.files.length) return;
+    voiceStatus.dataset.ready='1'; voiceStatus.className='ok';
+    voiceStatus.textContent='Selected: '+this.files[0].name+' (stays in this tab in the preview)';
+    waveEl.classList.add('live');
+  });
+  document.getElementById('finishCap').addEventListener('click', function(){ capStep(4); });
+
+  document.querySelectorAll('[data-view]').forEach(function(btn){
+    btn.addEventListener('click', function(){ go(btn.dataset.view); });
+  });
+
+  var gate = document.getElementById('openGate');
+  gate.addEventListener('click', function(){
+    document.getElementById('mem-locked').style.display='none';
+    document.getElementById('mem-open').style.display='block';
+    window.scrollTo(0,0);
+  });
+  document.getElementById('relock').addEventListener('click', function(){
+    document.getElementById('mem-open').style.display='none';
+    document.getElementById('mem-locked').style.display='block';
+    window.scrollTo(0,0);
+  });
+
+  var thread = document.getElementById('thread');
+  function bubble(role, text){
+    var el=document.createElement('div'); el.className='bubble '+(role==='user'?'user':'ai'); el.textContent=text;
+    if(role==='ai'){ var s=document.createElement('small'); s.textContent='🕊️ AI memorial, based on your memories · Hear this reply'; el.appendChild(s); }
+    thread.appendChild(el); thread.scrollTop=thread.scrollHeight;
+  }
+  function replyFor(text){
+    if(/kill myself|want to die|end my life|hurt myself/i.test(text)){
+      document.getElementById('crisis').classList.add('show');
+      return 'I am an AI memorial, and I want you safe. Please ring Samaritans on 116 123 or text SHOUT to 85258. You should not have to face this on your own.';
+    }
+    return 'I remember you saying that. Come in, sit down — I will put the kettle on and we can talk about it properly.';
+  }
+  document.getElementById('composer').addEventListener('submit', function(e){
+    e.preventDefault();
+    var input=document.getElementById('msg'), text=input.value.trim();
+    if(!text) return; input.value=''; bubble('user',text);
+    window.setTimeout(function(){ bubble('ai',replyFor(text)); },400);
+  });
+  var mic=document.getElementById('mic'), micLabel=document.getElementById('micLabel');
+  mic.addEventListener('click', function(){
+    var on=mic.classList.toggle('on');
+    micLabel.textContent = on ? 'Listening… say something about her day' : 'Tap to speak — or type below';
+    if(!on){ bubble('user','（a spoken message）'); window.setTimeout(function(){ bubble('ai',replyFor('hello')); },500); }
+  });
+  document.getElementById('crisisDemo').addEventListener('click', function(){ document.getElementById('crisis').classList.toggle('show'); });
+  document.getElementById('deleteAll').addEventListener('click', function(){
+    if(window.confirm('Permanently delete the voice sample and every answer? This cannot be undone.')){
+      document.getElementById('mem-open').innerHTML='<div class="card"><h1>Everything deleted</h1><p class="notice">Voice sample, answers and conversation removed. In the real app this also calls the provider to delete the cloned voice.</p></div>';
+    }
+  });
+})();
+</script>
+</body>
+</html>
