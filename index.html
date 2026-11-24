@@ -273,6 +273,9 @@ p{margin:0 0 12px}
             <span class="miclabel" id="micLabel">Simulated mic — or type below</span>
           </div>
           <p class="notice" id="voiceNote" style="margin-top:6px">Browser demo voice is off. Use “Hear this reply” under any reply to hear it spoken aloud by your browser — not a cloned voice.</p>
+          <label class="notice" for="voiceSelect" style="display:block;margin-top:8px">Demo voice
+            <select id="voiceSelect" style="margin-left:6px;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:4px 6px;max-width:240px"></select>
+          </label>
           <form class="row" id="composer" style="margin-top:12px">
             <input id="msg" class="field" style="flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--text)" placeholder="Or write a message…" />
             <button class="btn" type="submit">Send</button>
@@ -491,6 +494,36 @@ p{margin:0 0 12px}
   var isSample = false;
 
   var voiceNote = document.getElementById('voiceNote');
+  var voiceSelect = document.getElementById('voiceSelect');
+  function voiceScore(v){
+    var n=v.name||'';
+    if(/Google UK English Female/i.test(n)) return 100;
+    if(/Google UK English Male/i.test(n)) return 95;
+    if(/Natural/i.test(n) && /en[-_]GB/i.test(v.lang)) return 90;
+    if(/Microsoft (Hazel|Susan)/i.test(n)) return 80;
+    if(/en[-_]GB/i.test(v.lang)) return 60;
+    if(/^en/i.test(v.lang)) return 40;
+    return 0;
+  }
+  function refreshVoices(){
+    var all=(window.speechSynthesis ? window.speechSynthesis.getVoices() : []) || [];
+    var usable=all.filter(function(v){ return voiceScore(v)>0; });
+    usable.sort(function(a,b){ return voiceScore(b)-voiceScore(a); });
+    if(!usable.length) return;
+    var current=voiceSelect.value;
+    voiceSelect.innerHTML='';
+    usable.forEach(function(v){
+      var o=document.createElement('option'); o.value=v.name;
+      o.textContent=v.name+(v.localService?'':' (online)');
+      voiceSelect.appendChild(o);
+    });
+    if(current && usable.some(function(v){ return v.name===current; })) voiceSelect.value=current;
+    else voiceSelect.value=usable[0].name;
+  }
+  if(window.speechSynthesis){
+    refreshVoices();
+    window.speechSynthesis.addEventListener('voiceschanged', refreshVoices);
+  }
   var speakingBtn = null;
   function stopDemoVoice(){
     if(window.speechSynthesis) window.speechSynthesis.cancel();
@@ -504,13 +537,15 @@ p{margin:0 0 12px}
     stopDemoVoice();
     var u = new SpeechSynthesisUtterance('AI memorial demo. ' + text);
     var voices = window.speechSynthesis.getVoices() || [];
-    var preferred = voices.filter(function(v){ return /en[-_]GB/i.test(v.lang); })[0] || voices.filter(function(v){ return /^en/i.test(v.lang); })[0];
-    if(preferred) u.voice = preferred;
-    u.lang = preferred ? preferred.lang : 'en-GB';
-    u.rate = 0.95; u.pitch = 1.05;
+    var chosen = voices.filter(function(v){ return v.name===voiceSelect.value; })[0];
+    if(!chosen) chosen = voices.filter(function(v){ return /en[-_]GB/i.test(v.lang); })[0] || voices[0];
+    if(chosen) u.voice = chosen;
+    u.lang = chosen ? chosen.lang : 'en-GB';
+    u.rate = /Google/i.test(chosen ? chosen.name : '') ? 0.94 : 0.92;
+    u.pitch = 1.0;
     speakingBtn = btn || null;
     if(btn) btn.textContent='■ Stop demo voice';
-    voiceNote.textContent='🔊 Browser demo voice speaking now — your browser reading a sample reply, not Margaret’s real voice.';
+    voiceNote.textContent='🔊 '+(chosen?chosen.name:'Browser voice')+' speaking now — browser demo, not Margaret’s real voice.';
     u.onend = u.onerror = function(){
       if(speakingBtn===btn) speakingBtn=null;
       if(btn) btn.textContent='🔊 Hear this reply (browser demo voice)';
