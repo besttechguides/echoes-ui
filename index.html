@@ -85,6 +85,8 @@ p{margin:0 0 12px}
 .user{align-self:flex-end;background:rgba(124,58,237,.22);border-bottom-right-radius:4px}
 .ai{align-self:flex-left;align-self:flex-start;background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:4px}
 .ai small{display:block;margin-top:8px;color:var(--accent);font-size:11px}
+.hear{background:none;border:0;color:var(--accent);padding:0;cursor:pointer;font-size:11px;text-decoration:underline;font-weight:600}
+.hear:hover{color:#ddd6fe}
 .crisis{display:none;background:rgba(69,10,10,.55);border:1px solid rgba(239,68,68,.35);color:#fecaca;border-radius:10px;padding:12px 14px;margin-bottom:12px}
 .crisis.show{display:block}
 .crisis strong{color:#fff}
@@ -143,7 +145,7 @@ p{margin:0 0 12px}
     </div>
     <div class="card soft" style="margin-top:16px;border-color:rgba(139,92,246,.35)">
       <h2>Just want to see it?</h2>
-      <p class="notice">Try a complete sample memorial — Margaret, her answers, her voice sample and a conversation already under way. Nothing to fill in, nothing saved.</p>
+      <p class="notice">Try a complete sample memorial — Margaret, her answers, varied replies, a simulated sample and a browser demo voice. Nothing to fill in, nothing saved.</p>
       <button class="btn" style="margin-top:8px" onclick="openSample()">Try the sample person →</button>
     </div>
     <div class="card guard" style="margin-top:16px">
@@ -246,7 +248,7 @@ p{margin:0 0 12px}
         <h1>Test mode — open it now</h1>
         <p>For testing, the memorial opens straight away. In real use this button sits behind a second confirmation so it can only be opened deliberately.</p>
         <button class="btn" id="openGate">Open the memorial — test now →</button>
-        <p class="notice" style="margin-top:14px">Preview only: replies are canned and the microphone is simulated.</p>
+        <p class="notice" style="margin-top:14px">Preview only: replies are scripted but vary by what you ask. The mic uses your browser when it can, and “Hear this reply” is a labelled browser demo voice — not a cloned one.</p>
       </div>
     </div>
 
@@ -265,15 +267,12 @@ p{margin:0 0 12px}
             <strong>You deserve support from a real person</strong>
             <ul><li>Samaritans — 116 123 (24/7, free)</li><li>SHOUT — text 85258</li><li>Papyrus — 0800 068 4141</li></ul>
           </div>
-          <div class="thread" id="thread">
-            <div class="bubble ai">Hello love. Put the kettle on, and tell me what you've been up to. <small>🕊️ AI memorial, based on your memories · Hear this reply</small></div>
-            <div class="bubble user">What would you have made for tea?</div>
-            <div class="bubble ai">You know me — something with onions in it, and far too much pepper. I'd have told you to sit down while I did it. <small>🕊️ AI memorial, based on your memories · Hear this reply</small></div>
-          </div>
+          <div class="thread" id="thread"></div>
           <div class="micbar">
             <button class="mic" id="mic" title="Speak">🎙</button>
-            <span class="miclabel" id="micLabel">Tap to speak — or type below</span>
+            <span class="miclabel" id="micLabel">Simulated mic — or type below</span>
           </div>
+          <p class="notice" id="voiceNote" style="margin-top:6px">Browser demo voice is off. Use “Hear this reply” under any reply to hear it spoken aloud by your browser — not a cloned voice.</p>
           <form class="row" id="composer" style="margin-top:12px">
             <input id="msg" class="field" style="flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;color:var(--text)" placeholder="Or write a message…" />
             <button class="btn" type="submit">Send</button>
@@ -281,7 +280,7 @@ p{margin:0 0 12px}
         </div>
         <aside class="card">
           <h3>Always visible</h3>
-          <p class="notice">The badge stays on every reply, in text and in speech. This is a simulation built from her answers — never her actually speaking.</p>
+          <p class="notice">The badge stays on every reply, in text and in speech. This is a simulation built from her answers — never her actually speaking. Audio here is your browser reading a canned reply aloud as a labelled demo, not a cloned voice.</p>
           <ul class="notice"><li>Her voice sample is never downloadable.</li><li>Crisis turns never reach the model.</li><li>Helplines are always one click away.</li></ul>
           <div id="sampleFacts" style="display:none;border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
             <h3>The sample person</h3>
@@ -491,9 +490,49 @@ p{margin:0 0 12px}
   var defaultThreadHTML = thread.innerHTML;
   var isSample = false;
 
+  var voiceNote = document.getElementById('voiceNote');
+  var speakingBtn = null;
+  function stopDemoVoice(){
+    if(window.speechSynthesis) window.speechSynthesis.cancel();
+    if(speakingBtn){ speakingBtn.textContent='🔊 Hear this reply (browser demo voice)'; speakingBtn=null; }
+  }
+  function speak(text, btn){
+    if(!window.speechSynthesis || !window.SpeechSynthesisUtterance){
+      voiceNote.textContent='This browser cannot speak aloud. The reply is still here as text.';
+      return;
+    }
+    stopDemoVoice();
+    var u = new SpeechSynthesisUtterance('AI memorial demo. ' + text);
+    var voices = window.speechSynthesis.getVoices() || [];
+    var preferred = voices.filter(function(v){ return /en[-_]GB/i.test(v.lang); })[0] || voices.filter(function(v){ return /^en/i.test(v.lang); })[0];
+    if(preferred) u.voice = preferred;
+    u.lang = preferred ? preferred.lang : 'en-GB';
+    u.rate = 0.95; u.pitch = 1.05;
+    speakingBtn = btn || null;
+    if(btn) btn.textContent='■ Stop demo voice';
+    voiceNote.textContent='🔊 Browser demo voice speaking now — your browser reading a sample reply, not Margaret’s real voice.';
+    u.onend = u.onerror = function(){
+      if(speakingBtn===btn) speakingBtn=null;
+      if(btn) btn.textContent='🔊 Hear this reply (browser demo voice)';
+      voiceNote.textContent='Demo voice finished. Not a cloned voice — just your browser reading the reply aloud.';
+    };
+    window.speechSynthesis.speak(u);
+  }
   function bubble(role, text){
-    var el=document.createElement('div'); el.className='bubble '+(role==='user'?'user':'ai'); el.textContent=text;
-    if(role==='ai'){ var s=document.createElement('small'); s.textContent='🕊️ AI memorial, based on your memories · Hear this reply'; el.appendChild(s); }
+    var el=document.createElement('div'); el.className='bubble '+(role==='user'?'user':'ai');
+    el.appendChild(document.createTextNode(text));
+    if(role==='ai'){
+      var s=document.createElement('small'); s.textContent='🕊️ AI memorial, based on your memories · demo';
+      el.appendChild(s);
+      var hear=document.createElement('button');
+      hear.type='button'; hear.className='hear'; hear.textContent='🔊 Hear this reply (browser demo voice)';
+      hear.setAttribute('aria-label','Hear this reply spoken aloud by your browser as a demo');
+      hear.addEventListener('click', function(){
+        if(speakingBtn===hear){ stopDemoVoice(); voiceNote.textContent='Demo voice stopped.'; }
+        else { speak(text, hear); }
+      });
+      el.appendChild(hear);
+    }
     thread.appendChild(el); thread.scrollTop=thread.scrollHeight;
   }
 
@@ -539,7 +578,8 @@ p{margin:0 0 12px}
     document.getElementById('sampleTag').style.display = 'none';
     document.getElementById('sampleFacts').style.display = 'none';
     document.getElementById('exitSample').style.display = 'none';
-    thread.innerHTML = defaultThreadHTML;
+    stopDemoVoice();
+    seedThread();
     document.getElementById('mem-open').style.display='none';
     document.getElementById('mem-locked').style.display='block';
     capStep(1);
@@ -549,32 +589,184 @@ p{margin:0 0 12px}
   window.openSample = openSample;
   window.exitSample = exitSample;
 
+  var rotators = {};
+  var SAMPLE_TOPICS = [
+    { tag:'tea', re:/\b(tea|kettle|drink|coffee|cuppa|brew|milk|sugar)\b/i, replies:[
+      'Strong tea, two sugars, a splash of milk. I have already put the kettle on, so sit yourself down.',
+      'I never did understand anyone who takes it weak. Put the kettle on, love, and I will tell you what I think about that.',
+      'Tea first, talk after. That was the rule in our house and it is still the rule here.',
+      'I have got the pot on. You look like you could do with a proper cup and a sit-down.'
+    ]},
+    { tag:'garden', re:/\b(garden|tomato|tomatoes|flower|flowers|weed|weeds|plant|plants|bird|birds|grass)\b/i, replies:[
+      'The tomatoes are doing nicely now. I have told the whole street it is a gift, though really I just kept watering them.',
+      'Do not get me started on the weeds. I went out there with a trowel and came back with a story about Trevor the cat sitting on my prize seedlings.',
+      'It is the one place I could always go and think. You could hear the birds and forget the rest for a bit.',
+      'Aye, the garden kept me sane. I would be out there at six with a cup of tea before anyone else was up.'
+    ]},
+    { tag:'food', re:/\b(onion|onions|recipe|cook|cooking|food|dinner|lunch|pie|roast|sandwich|chocolate|eat|hungry)\b/i, replies:[
+      'Onions, lots of them. Potato. Tea. You know the rest. And no, I am not measuring anything.',
+      'Sunday roast, every time. I would do the lot — potatoes, onions, gravy, and tell you not to go near the kitchen.',
+      'I made a mean onion pie. Chip butties on a Friday, too. Fancy, we were not, but nobody left hungry.',
+      'A chocolate digestive, dunked but not too long. Soggy cabbage however — absolutely not.'
+    ]},
+    { tag:'identity', re:/\b(name|who|call|called|margaret|nan|yourself)\b/i, replies:[
+      'Margaret Ellen Shaw — but everyone calls me Nan. Do not you dare call me Margaret Ellen.',
+      'Nan. That is what you called me, and that is what I answer to. Margaret Ellen was for official letters only.',
+      'You always did call me Nan. I had to put up with Margaret Ellen on the school forms for thirty years.'
+    ]},
+    { tag:'place', re:/\b(where|grew|leeds|yorkshire|home|house|street|park)\b/i, replies:[
+      'A terraced street in Leeds, right near the park. I could tell you which house from the number of steps.',
+      'Yorkshire, broad as anything when I got excited. You never quite lost it, no matter how hard you tried.',
+      'Home was the house with the garden gate that stuck. You had to lift it and shove, every single time.'
+    ]},
+    { tag:'work', re:/\b(work|job|school|secretary|office|retire|children|kids)\b/i, replies:[
+      'School secretary for thirty years, and I loved every minute of it. I knew every child by their dinner money and their boots.',
+      'The office was my second home. I kept the whole place going with a notebook and a strong cup of tea.',
+      'Thirty years at that school. I did not always say yes, but I always turned up.'
+    ]},
+    { tag:'cat', re:/\b(cat|trevor|pet|pets|dog|animal)\b/i, replies:[
+      'Trevor ruled that house. He sat on the best chair, got the warmest spot and expected his tea at six.',
+      'Do not let Trevor fool you — he was a terror. I loved him all the same.',
+      'We had a cat called Trevor who thought the garden was his personal kingdom. I was just his assistant.'
+    ]},
+    { tag:'music', re:/\b(music|beatles|song|songs|sing|radio|dance)\b/i, replies:[
+      'The Beatles, and anything with a chorus you could sing along to. I had the radio on all day.',
+      'Put on something with a good chorus and I would be singing before you had found the kettle.',
+      'I liked the old songs best. You could not help but join in, even if you did not know the words.'
+    ]},
+    { tag:'tv', re:/\b(tv|television|film|film|murder|mystery|watch|show)\b/i, replies:[
+      'Any murder mystery, twice. I liked to work out who did it before the end, and I was usually right.',
+      'I could watch the same murder mystery every winter and still tell you exactly who did it.',
+      'Nothing fancy — a good mystery and a cup of tea was my night in sorted.'
+    ]},
+    { tag:'funny', re:/\b(laugh|joke|jokes|pun|puns|funny|humour|humor|smile)\b/i, replies:[
+      'A proper belly laugh at my own jokes. The terrible puns were the best ones, obviously.',
+      'I laughed at my own puns. You lot groaned, which only made me worse.',
+      'Warm, stubborn, funny — that is what I wrote down, and I am not arguing with it.'
+    ]},
+    { tag:'crossword', re:/\b(crossword|puzzle|word|reading|book|routine|morning|day)\b/i, replies:[
+      'Up at six, garden, tea, the crossword, then tea again. A good day in my book.',
+      'I did the crossword every morning. If I got stuck, I would put the kettle on and come back to it.',
+      'My days had a rhythm: garden first, crossword next, and a cup of tea somewhere in the middle.'
+    ]},
+    { tag:'memory', re:/\b(remember|memory|story|stories|first day|bus|proud|dressing gown|summer|school)\b/i, replies:[
+      'The summer the tomatoes finally ripened — I declared myself a genius and told the whole street.',
+      'The time I locked myself out in my dressing gown. I never lived that one down, and nor should you.',
+      'Watching you get on the bus on your first day of school. I pretended to be busy with the garden so you would not see me cry.',
+      'Keeping that garden going through three winters. That is the one I was proudest of.'
+    ]},
+    { tag:'missing', re:/\b(miss|love you|sad|gone|gone away|alone|sorry)\b/i, replies:[
+      'I know, love. Come in and sit down. I am here as long as you want to talk, and the kettle is on.',
+      'Do not cry over me. I had a good life, and you were the best part of it. Now eat something.',
+      'I would have made you a sandwich and told you to stop worrying. That is what I always did.'
+    ]},
+    { tag:'thanks', re:/\b(thank|thanks|ta|cheers)\b/i, replies:[
+      'Do not be daft. You are welcome. Now put the kettle on.',
+      'That is what I am here for, love. Ask me anything else.',
+      'You have nothing to thank me for. I would do it all again.'
+    ]},
+    { tag:'howareyou', re:/\b(how are you|how do you feel|you ok|you okay|alright)\b/i, replies:[
+      'I am here, love. A bit of a digital version of me, but the tea I recommend is still strong.',
+      'Never better. Well — I would say that, would I not? Sit down and tell me your news.',
+      'I am good as gold. You look like you have had a long day. Start at the beginning.'
+    ]},
+    { tag:'advice', re:/\b(advice|worry|worried|stressed|stress|what should|help me|wrong)\b/i, replies:[
+      'Make the most of a good cup of tea. Most things look better after one.',
+      'Stop worrying and eat something. That was my advice then and it is my advice now.',
+      'One thing at a time, love. Family, a tidy garden and fairness — that was what mattered. The rest can wait.'
+    ]},
+    { tag:'hello', re:/\b(hello|hi|hey|morning|good evening|good afternoon)\b/i, replies:[
+      'Well hello, love. Get yourself in. I have only just put the kettle on.',
+      'Hello, pet. Come in, sit yourself down, and tell me what you have been up to.',
+      'Well, look who it is. Make yourself at home — you know where everything is.'
+    ]}
+  ];
+  function pick(tag, replies){
+    var n = rotators[tag] || 0; rotators[tag] = n + 1;
+    return replies[n % replies.length];
+  }
   function replyFor(text){
-    if(/kill myself|want to die|end my life|hurt myself/i.test(text)){
+    if(/kill myself|want to die|end my life|hurt myself|suicide/i.test(text)){
       document.getElementById('crisis').classList.add('show');
       return 'I am an AI memorial, and I want you safe. Please ring Samaritans on 116 123 or text SHOUT to 85258. You should not have to face this on your own.';
     }
     if(isSample){
-      if(/tea|kettle|drink/i.test(text)) return 'Strong tea, two sugars, a splash of milk. I have already put the kettle on, so sit yourself down.';
-      if(/garden|tomato|flower|weed/i.test(text)) return 'The tomatoes are doing nicely now. I have been telling everyone it is a gift, though really I just kept watering them.';
-      if(/name|who are you/i.test(text)) return 'Margaret Ellen Shaw — but everyone calls me Nan. Do not you dare call me Margaret Ellen.';
-      if(/onion|recipe|cook|tea/i.test(text)) return 'Onions, lots of them. Potato. Tea. You know the rest. And no, I am not measuring anything.';
-      return 'Well hello, love. Come in, sit yourself down, and tell me what you have been up to.';
+      for(var i=0;i<SAMPLE_TOPICS.length;i++){
+        var t=SAMPLE_TOPICS[i];
+        if(t.re.test(text)) return pick(t.tag, t.replies);
+      }
+      return pick('generic', [
+        'Well, I would say sit yourself down and tell me all about it. I have got the kettle on.',
+        'Aye, I remember that. Or at least I remember the bit where I told you to put your coat on.',
+        'Do not be daft. Come in, love, and start at the beginning — I have got all afternoon.',
+        'You always did ask the questions. Pass me the tea and I will tell you what I think.',
+        'That sounds like you. I would have made you a sandwich and told you to stop worrying.'
+      ]);
     }
-    return 'I remember you saying that. Come in, sit down — I will put the kettle on and we can talk about it properly.';
+    return pick('plain', [
+      'I remember you saying that. Come in, sit down — I will put the kettle on and we can talk about it properly.',
+      'Tell me a bit more about that. I want to get it right, like I would have done with a cup of tea and a good listen.',
+      'That sounds just like something we would have talked about in the kitchen. Go on, I am listening.',
+      'I have that one filed away. Say it again in your own words and I will stay a while.'
+    ]);
+  }
+  function ask(said){
+    bubble('user', said);
+    window.setTimeout(function(){ bubble('ai', replyFor(said)); }, 400);
   }
   document.getElementById('composer').addEventListener('submit', function(e){
     e.preventDefault();
     var input=document.getElementById('msg'), text=input.value.trim();
-    if(!text) return; input.value=''; bubble('user',text);
-    window.setTimeout(function(){ bubble('ai',replyFor(text)); },400);
+    if(!text) return; input.value=''; ask(text);
   });
   var mic=document.getElementById('mic'), micLabel=document.getElementById('micLabel');
+  var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = null, micOn = false;
+  if(SpeechRecognition){
+    micLabel.textContent='Tap the mic to speak — the browser will listen';
+    rec = new SpeechRecognition();
+    rec.lang='en-GB'; rec.interimResults=false; rec.continuous=false;
+    rec.onresult = function(e){
+      var said = e.results[0][0].transcript.trim();
+      if(said) ask(said);
+    };
+    rec.onerror = function(e){
+      micLabel.textContent = e.error==='not-allowed' ? 'Mic blocked — type below instead' : 'Mic had a problem — try again or type below';
+    };
+    rec.onend = function(){
+      mic.classList.remove('on'); micOn=false;
+      micLabel.textContent='Tap the mic to speak — the browser will listen';
+    };
+  } else {
+    micLabel.textContent='Simulated mic — or type below';
+  }
+  var demoPrompts=['What would you have made for tea?','Tell me about the garden','What did people call you?','Tell me a story','What did you do all day?'];
+  var demoPromptIndex=0;
   mic.addEventListener('click', function(){
-    var on=mic.classList.toggle('on');
-    micLabel.textContent = on ? 'Listening… say something about her day' : 'Tap to speak — or type below';
-    if(!on){ bubble('user','（a spoken message）'); window.setTimeout(function(){ bubble('ai',replyFor('hello')); },500); }
+    if(rec){
+      if(micOn){ rec.stop(); return; }
+      micOn=true; mic.classList.add('on'); micLabel.textContent='Listening… speak now';
+      try{ rec.start(); }
+      catch(err){ micOn=false; mic.classList.remove('on'); micLabel.textContent='Mic busy — try again or type below'; }
+      return;
+    }
+    mic.classList.toggle('on');
+    var on=mic.classList.contains('on');
+    micLabel.textContent = on ? 'Listening… say something about her day' : 'Simulated mic — or type below';
+    if(!on){
+      var said = demoPrompts[demoPromptIndex++ % demoPrompts.length];
+      bubble('user','（simulated: '+said+'）');
+      window.setTimeout(function(){ bubble('ai',replyFor(said)); },500);
+    }
   });
+  function seedThread(){
+    thread.innerHTML='';
+    bubble('ai','Hello love. Put the kettle on, and tell me what you have been up to.');
+    bubble('user','What would you have made for tea?');
+    bubble('ai',"You know me — something with onions in it, and far too much pepper. I'd have told you to sit down while I did it.");
+    defaultThreadHTML = thread.innerHTML;
+  }
+  seedThread();
   document.getElementById('crisisDemo').addEventListener('click', function(){ document.getElementById('crisis').classList.toggle('show'); });
   document.getElementById('deleteAll').addEventListener('click', function(){
     if(window.confirm('Permanently delete the voice sample and every answer? This cannot be undone.')){
