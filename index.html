@@ -98,7 +98,22 @@ p{margin:0 0 12px}
 .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--muted);font-size:12px;margin:0 6px 6px 0}
 .link{color:var(--accent);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;font-size:12px}
 .saved{border-color:rgba(16,185,129,.4)}
-@media(max-width:700px){.timeline,.fieldgrid,.review{grid-template-columns:1fr}}
+.phone{width:264px;margin:18px auto 10px;background:#222;border:8px solid #222;border-bottom-width:14px;border-radius:34px;padding:8px;box-shadow:0 18px 38px rgba(0,0,0,.55)}
+.phone-screen{background:var(--panel);border-radius:22px;min-height:300px;padding:14px;overflow:hidden}
+.phone-notch{width:76px;height:12px;background:#222;border-radius:0 0 10px 10px;margin:-8px auto 8px}
+.phone-status{display:flex;justify-content:space-between;font-size:10px;color:var(--dim);margin-bottom:10px}
+.phone-badge{font-size:9px;color:#ddd6fe;background:rgba(76,29,149,.35);border:1px solid rgba(139,92,246,.3);border-radius:999px;padding:2px 8px;display:inline-block;margin-bottom:8px}
+.phone-bubble{max-width:86%;font-size:12px;padding:8px 10px;border-radius:12px;margin-bottom:7px}
+.phone-bubble.ai{background:var(--panel2);border:1px solid var(--line);border-bottom-left-radius:3px}
+.phone-bubble.user{background:rgba(124,58,237,.22);margin-left:auto;border-bottom-right-radius:3px}
+.phone-mic{margin-top:10px;border-top:1px solid var(--line);padding-top:9px;color:var(--muted);font-size:11px;display:flex;gap:8px;align-items:center}
+.people{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.person-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:left;color:var(--text);cursor:pointer}
+.person-card:hover{border-color:var(--accentStrong);background:rgba(124,58,237,.08)}
+.person-card .emoji{font-size:24px;display:block;margin-bottom:6px}
+.person-card b{display:block;font-size:13px}
+.person-card .note{font-size:11px;color:var(--muted)}
+@media(max-width:700px){.timeline,.fieldgrid,.review,.people{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -118,17 +133,17 @@ p{margin:0 0 12px}
   <section id="view-overview" class="view active">
     <div class="hero">
       <span class="badge">● AI memorial, based on your memories</span>
-      <h1 style="margin-top:16px">Her voice. Her stories. Kept with love.</h1>
-      <p class="lede">Echoes has two phases. While she's here, she fills in her own questions and records her voice. Only when you choose to open the memorial does it become a voice conversation you can return to.</p>
+      <h1 style="margin-top:16px">Make a call to a loved one.</h1>
+      <p class="lede">Their voice. Their stories. Kept with love. While they're here, they answer questions in their own words and record a voice sample. When you choose to open the memorial, it becomes a conversation you can return to.</p>
     </div>
     <div class="timeline">
       <div class="phase">
-        <div class="num">Phase 1 · While she's here</div>
-        <h2>Capture, with her permission</h2>
+        <div class="num">Phase 1 · While they're here</div>
+        <h2>Capture, with their permission</h2>
         <ul>
-          <li>She reads and agrees to a clear consent page.</li>
-          <li>She fills in the questions herself — foods, sayings, stories, routine.</li>
-          <li>She records a short voice sample in her own words.</li>
+          <li>They read and agree to a clear consent page.</li>
+          <li>They fill in the questions themselves — foods, sayings, stories, routine.</li>
+          <li>They record a short voice sample in their own words.</li>
           <li>Everything stays locked away until you need it.</li>
         </ul>
       </div>
@@ -137,28 +152,45 @@ p{margin:0 0 12px}
         <h2>Talk, with eyes open</h2>
         <ul>
           <li>You deliberately switch the memorial on.</li>
-          <li>Voice conversations use her sample — clearly labelled as AI every time.</li>
+          <li>Voice conversations use their sample — clearly labelled as AI every time.</li>
           <li>Crisis language is caught before the AI replies.</li>
           <li>You can delete the voice and every answer in one action.</li>
         </ul>
       </div>
     </div>
     <div class="card soft" style="margin-top:16px;border-color:rgba(139,92,246,.35)">
-      <h2>Just want to see it?</h2>
-      <p class="notice">Try a complete sample memorial — Margaret, her answers, varied replies, a simulated sample and a browser demo voice. Nothing to fill in, nothing saved.</p>
-      <button class="btn" style="margin-top:8px" onclick="openSample()">Try the sample person →</button>
+      <h2>Make a call to a loved one</h2>
+      <p class="notice">Try a sample conversation. Pick someone below — a grandmother, a dad or a child — and see how Echoes keeps the way they talked.</p>
+      <div class="phone" aria-hidden="true">
+        <div class="phone-screen">
+          <div class="phone-notch"></div>
+          <div class="phone-status"><span>9:41</span><span>●●● ▰</span></div>
+          <span class="phone-badge">🕊️ AI memorial · demo</span>
+          <div class="phone-bubble ai">Hello love. Put the kettle on and tell me your news.</div>
+          <div class="phone-bubble user">What would you have made for tea?</div>
+          <div class="phone-bubble ai">You know me — onions, far too much pepper, and no measuring.</div>
+          <div class="phone-mic">🎙 <span>Tap to talk to Nan</span></div>
+        </div>
+      </div>
+      <p class="notice" style="text-align:center;margin-top:0">Example call: Nan · pick anyone below</p>
+      <div class="people">
+        <button class="person-card" onclick="openSample('nan')"><span class="emoji">👵</span><b>Nan · Margaret</b><span class="note">Tea, tomatoes and terrible puns</span></button>
+        <button class="person-card" onclick="openSample('dad')"><span class="emoji">👨</span><b>Dad · Alan</b><span class="note">Shed, football and bad advice</span></button>
+        <button class="person-card" onclick="openSample('child')"><span class="emoji">🧒</span><b>Ellie · age 9</b><span class="note">Dinosaurs, drawings and why?</span></button>
+      </div>
+      <p class="notice" style="margin-top:10px">All three are demo people. Nothing is saved. The voice is your browser reading a labelled demo — not a cloned voice.</p>
     </div>
     <div class="card guard" style="margin-top:16px">
       <h2>What has to be true for this to be okay</h2>
       <ul>
-        <li><strong>She consents while she is alive</strong>, knowing exactly what is being made and that it will speak after her death.</li>
-        <li><strong>It never pretends to be her.</strong> A permanent "AI memorial" badge shows in text and speech.</li>
+        <li><strong>They consent while they are alive</strong>, knowing exactly what is being made and that it will speak after they die.</li>
+        <li><strong>It never pretends to be them.</strong> A permanent "AI memorial" badge shows in text and speech.</li>
         <li><strong>No raw voice is downloadable or exported.</strong> The sample stays with the provider only.</li>
-        <li><strong>She can withdraw and have everything deleted at any time.</strong></li>
+        <li><strong>They can withdraw and have everything deleted at any time.</strong></li>
       </ul>
     </div>
     <div class="row" style="margin-top:18px">
-      <button class="btn" onclick="go('capture')">Start with her consent →</button>
+      <button class="btn" onclick="go('capture')">Start with their consent →</button>
       <span class="notice">Preview only — nothing here is recorded or sent.</span>
     </div>
   </section>
@@ -167,22 +199,22 @@ p{margin:0 0 12px}
   <section id="view-capture" class="view">
     <div class="steps">
       <span class="step on" id="s1">1 · Consent</span>
-      <span class="step" id="s2">2 · Her answers</span>
+      <span class="step" id="s2">2 · Their answers</span>
       <span class="step" id="s3">3 · Voice sample</span>
       <span class="step" id="s4">4 · Saved</span>
     </div>
 
     <div id="cap-1">
       <div class="card">
-        <h1>For her to fill in, while she's here</h1>
-        <p class="notice">Best if she reads this herself. It is her voice and her story.</p>
+        <h1>For them to fill in, while they're here</h1>
+        <p class="notice">Best if they read this themselves. It is their voice and their story.</p>
         <label class="consent"><input type="checkbox" id="c1" /><span><b>I understand this makes an AI simulation.</b> It is not me, and it will not be me after I die.</span></label>
         <label class="consent"><input type="checkbox" id="c2" /><span><b>I agree to my voice being sampled</b> so the memorial can speak in my voice. I know no one can download the raw recording.</span></label>
         <label class="consent"><input type="checkbox" id="c3" /><span><b>I agree to my answers being kept</b> and used to shape how the memorial talks, with an AI badge always shown.</span></label>
         <label class="consent"><input type="checkbox" id="c4" /><span><b>I know I can change my mind</b> and have the voice and all my answers deleted while I am alive.</span></label>
         <label class="consent"><input type="checkbox" id="c5" /><span><b>I understand who can open it.</b> The memorial stays locked until my family chooses to switch it on after I'm gone.</span></label>
         <div class="row" style="margin-top:16px">
-          <button class="btn" id="toAnswers" disabled>She agrees — go to her questions →</button>
+          <button class="btn" id="toAnswers" disabled>They agree — go to their questions →</button>
           <span class="notice" id="consentHint">Tick all five to continue.</span>
         </div>
       </div>
@@ -190,22 +222,22 @@ p{margin:0 0 12px}
 
     <div id="cap-2" style="display:none">
       <div class="card">
-        <h1>Tell us about her — in her own words</h1>
-        <p class="notice">She fills this in. The more detail, the truer the memorial sounds. Nothing is public.</p>
+        <h1>Tell us about them — in their own words</h1>
+        <p class="notice">They fill this in. The more detail, the truer the memorial sounds. Nothing is public.</p>
         <div class="fieldgrid" id="questionnaire"></div>
         <div class="row" style="margin-top:18px">
           <button class="btn ghost" onclick="capStep(1)">← Back</button>
           <button class="btn ghost" id="fillSample" type="button">Fill with sample answers</button>
           <span class="spacer"></span>
-          <button class="btn" onclick="capStep(3)">Answers done — record her voice →</button>
+          <button class="btn" onclick="capStep(3)">Answers done — record their voice →</button>
         </div>
       </div>
     </div>
 
     <div id="cap-3" style="display:none">
       <div class="card">
-        <h1>A short recording in her voice</h1>
-        <p class="notice">30–60 seconds in a quiet room works best. Ask her to read a few lines of something she'd actually say, or just tell a story.</p>
+        <h1>A short recording in their voice</h1>
+        <p class="notice">30–60 seconds in a quiet room works best. Ask them to read a few lines of something they'd actually say, or just tell a story.</p>
         <div class="drop">
           <div class="wave" id="wave"></div>
           <p id="voiceStatus" class="notice">No sample chosen yet.</p>
@@ -216,7 +248,7 @@ p{margin:0 0 12px}
         <div class="row" style="margin-top:16px">
           <button class="btn ghost" onclick="capStep(2)">← Back</button>
           <span class="spacer"></span>
-          <button class="btn" id="finishCap">Save her memorial →</button>
+          <button class="btn" id="finishCap">Save their memorial →</button>
         </div>
       </div>
     </div>
@@ -224,7 +256,7 @@ p{margin:0 0 12px}
     <div id="cap-4" style="display:none">
       <div class="card saved">
         <span class="badge">● Saved in safekeeping</span>
-        <h1 style="margin-top:14px">Her memorial is ready, and locked.</h1>
+        <h1 style="margin-top:14px">Their memorial is ready, and locked.</h1>
         <p class="notice">Nothing can be heard yet. The voice and answers stay sealed until you deliberately open Phase 2.</p>
         <div class="review">
           <div><b>Voice sample</b><span id="rvVoice">Not provided</span></div>
@@ -233,7 +265,7 @@ p{margin:0 0 12px}
           <div><b>Status</b>Locked · not searchable · not public</div>
         </div>
         <div class="row" style="margin-top:18px">
-          <button class="btn ghost" onclick="capStep(2)">Edit her answers</button>
+          <button class="btn ghost" onclick="capStep(2)">Edit their answers</button>
           <button class="btn" onclick="go('memorial')">Go to the memorial →</button>
         </div>
       </div>
@@ -283,13 +315,9 @@ p{margin:0 0 12px}
         </div>
         <aside class="card">
           <h3>Always visible</h3>
-          <p class="notice">The badge stays on every reply, in text and in speech. This is a simulation built from her answers — never her actually speaking. Audio here is your browser reading a canned reply aloud as a labelled demo, not a cloned voice.</p>
-          <ul class="notice"><li>Her voice sample is never downloadable.</li><li>Crisis turns never reach the model.</li><li>Helplines are always one click away.</li></ul>
-          <div id="sampleFacts" style="display:none;border-top:1px solid var(--line);margin-top:14px;padding-top:12px">
-            <h3>The sample person</h3>
-            <p class="notice">Margaret, 74. Loved her garden, strong tea and a dry joke. Not a real person — all demo data.</p>
-            <ul class="notice"><li>Favourite meal: Sunday roast</li><li>Always said: "Make yourself at home"</li><li>Laughed at her own terrible puns</li></ul>
-          </div>
+          <p class="notice">The badge stays on every reply, in text and in speech. This is a simulation built from their answers — never them actually speaking. Audio here is your browser reading a canned reply aloud as a labelled demo, not a cloned voice.</p>
+          <ul class="notice"><li>The voice sample is never downloadable.</li><li>Crisis turns never reach the model.</li><li>Helplines are always one click away.</li></ul>
+          <div id="sampleFacts" style="display:none;border-top:1px solid var(--line);margin-top:14px;padding-top:12px"></div>
           <p style="margin-top:14px"><button class="link" onclick="go('support')">Support &amp; helplines →</button></p>
           <p><button class="link" id="deleteAll" style="color:var(--danger)">Delete voice and all answers</button></p>
           <p><button class="link" id="relock">Re-lock the memorial (test)</button></p>
@@ -315,82 +343,220 @@ p{margin:0 0 12px}
 <script>
 (function(){
   var FIELD_GROUPS = [
-    { title:'Her basics', sub:'The small facts that make her real.', fields:[
-      ['Full name','e.g. Joan Mary Ellis'],['Nickname','What everyone called her'],
-      ['Date of birth','Any format she likes'],['Where she grew up','Town, street, house if she wants'],
+    { title:'Their basics', sub:'The small facts that make them real.', fields:[
+      ['Full name','e.g. Joan Mary Ellis'],['Nickname','What everyone called them'],
+      ['Date of birth','Any format they like'],['Where they grew up','Town, street, house if they want'],
       ['Languages or accent','Any words only family says']
     ]},
-    { title:'Food & drink', sub:'Her answer to "what\'s for tea?"', fields:[
-      ['Favourite meal','The one she always chose'],['What she cooked for you','A dish people remember'],
-      ['Her tea or coffee order','Exactly how she took it'],['Treats she loved','Sweet, savoury, anything'],
-      ['Foods she could not stand','Be honest'],['A recipe in her own words','How much of each? No measuring.']
+    { title:'Food & drink', sub:'Their answer to "what\'s for tea?"', fields:[
+      ['Favourite meal','The one they always chose'],['What they cooked for you','A dish people remember'],
+      ['Their tea or coffee order','Exactly how they took it'],['Treats they loved','Sweet, savoury, anything'],
+      ['Foods they could not stand','Be honest'],['A recipe in their own words','How much of each? No measuring.']
     ]},
-    { title:'Her words', sub:'The phrases you would recognise anywhere.', fields:[
-      ['Things she always said','Comma separated'],['How she greeted family','Her actual first line'],
-      ['How she laughed','What set her off'],['Words of affection','What she called you'],
-      ['Phrases that annoyed her','The ones you used to wind her up']
+    { title:'Their words', sub:'The phrases you would recognise anywhere.', fields:[
+      ['Things they always said','Comma separated'],['How they greeted family','Their actual first line'],
+      ['How they laughed','What set them off'],['Words of affection','What they called you'],
+      ['Phrases that annoyed them','The ones you used to wind them up']
     ]},
-    { title:'Everyday life', sub:'The rhythm of her days.', fields:[
+    { title:'Everyday life', sub:'The rhythm of their days.', fields:[
       ['Daily routine','Morning through to bed'],['Hobbies and habits','Garden, puzzles, walking…'],
-      ['Music she loved','Artists, songs, the radio station'],['TV and films','What she watched twice'],
-      ['Pets','Names and personalities'],['Her work','What she did, and how she felt about it']
+      ['Music they loved','Artists, songs, the radio station'],['TV and films','What they watched twice'],
+      ['Pets','Names and personalities'],['Their work or school','What they did, and how they felt about it']
     ]},
-    { title:'Her character', sub:'How she came across to people.', fields:[
-      ['Three words to describe her','Warm, stubborn, funny…'],['What made her laugh','The stupidest thing that worked'],
-      ['What made her cross','What you learned to avoid'],['How she showed love','Not always with words'],
-      ['Her advice','The line she repeated most']
+    { title:'Their character', sub:'How they came across to people.', fields:[
+      ['Three words to describe them','Warm, stubborn, funny…'],['What made them laugh','The stupidest thing that worked'],
+      ['What made them cross','What you learned to avoid'],['How they showed love','Not always with words'],
+      ['Their advice','The line they repeated most']
     ]},
     { title:'Stories', sub:'The ones worth keeping.', fields:[
-      ['A favourite memory','A whole scene if she can'],['A family story','The one told at every gathering'],
-      ['A time she was proud','Her words, not yours'],['A time she was sad','Only what she wants kept'],
-      ['What she would say to you now','Imagine you are in the kitchen together']
+      ['A favourite memory','A whole scene if they can'],['A family story','The one told at every gathering'],
+      ['A time they were proud','Their words, not yours'],['A time they were sad','Only what they want kept'],
+      ['What they would say to you now','Imagine you are in the kitchen together']
     ]},
     { title:'What mattered', sub:'The values behind the answers.', fields:[
-      ['What mattered most','Family, faith, fairness…'],['What she was proud of','Big or small'],
-      ['What she hoped for you','Her real hope'],['How she want to be remembered','One sentence in her voice']
+      ['What mattered most','Family, faith, fairness…'],['What they were proud of','Big or small'],
+      ['What they hoped for you','Their real hope'],['How they want to be remembered','One sentence in their voice']
     ]}
   ];
 
-  var SAMPLE = {
-    answers: {
-      'Full name':'Margaret Ellen Shaw',
-      'Nickname':'Nan',
-      'Date of birth':'12 March 1952',
-      'Where she grew up':'A terraced street in Leeds, near the park',
-      'Languages or accent':'Yorkshire, broad as anything when she got excited',
-      'Favourite meal':'Sunday roast with all the trimmings',
-      'What she cooked for you':'Onion pie and chip butties on a Friday',
-      'Her tea or coffee order':'Strong tea, two sugars, a splash of milk',
-      'Treats she loved':'Chocolate digestive, dunked but not too long',
-      'Foods she could not stand':'Soggy cabbage and anything fancy',
-      'A recipe in her own words':'Onions, lots of them. Potato. Tea. You know the rest.',
-      'Things she always said':"Make yourself at home, Don't be daft, Put the kettle on",
-      'How she greeted family':'Well hello, love. Get yourself in.',
-      'How she laughed':'A proper belly laugh at her own jokes',
-      'Words of affection':'Love, pet, our kid',
-      'Phrases that annoyed her':'When you said "whatever"',
-      'Daily routine':'Up at six, garden, tea, the crossword, tea again',
-      'Hobbies and habits':'Gardening, crosswords, feeding the birds',
-      'Music she loved':'The Beatles, and anything with a good chorus',
-      'TV and films':'Any murder mystery, twice',
-      'Pets':'A cat called Trevor who ruled the house',
-      'Her work':'School secretary for thirty years, loved every minute',
-      'Three words to describe her':'Warm, stubborn, funny',
-      'What made her laugh':'Her own terrible puns',
-      'What made her cross':'Being kept waiting',
-      'How she showed love':'Fed you until you could not move',
-      'Her advice':'Make the most of a good cup of tea',
-      'A favourite memory':'The summer the tomatoes finally ripened and she declared herself a genius',
-      'A family story':'The time she locked herself out in her dressing gown',
-      'A time she was proud':'Watching you get on the bus on your first day of school',
-      'A time she was sad':'She never said much, just made you a sandwich',
-      'What she would say to you now':"I'd tell you to stop worrying and eat something",
-      'What mattered most':'Family, a tidy garden, and fairness',
-      'What she was proud of':'Keeping that garden going through three winters',
-      'What she hoped for you':'That you look after yourself',
-      'How she want to be remembered':'As the one who always put the kettle on'
+  var SAMPLES = {
+    nan: {
+      name:'Nan (Margaret)', voiceName:'Margaret Shaw',
+      facts:'<h3>The sample person</h3><p class="notice">Margaret, 74. Loved her garden, strong tea and a dry joke. Not a real person — all demo data.</p><ul class="notice"><li>Favourite meal: Sunday roast</li><li>Always said: “Make yourself at home”</li><li>Laughed at her own terrible puns</li></ul>',
+      thread:[
+        ['ai','Hello love. Put the kettle on, and tell me what you have been up to.'],
+        ['user','What would you have made for tea?'],
+        ['ai','You know me — something with onions in it, and far too much pepper. I would have told you to sit down while I did it.'],
+        ['user','And how are the tomatoes?'],
+        ['ai','Finally ripe, thank goodness. I have told the whole street I am a genius. Do not tell them otherwise.']
+      ],
+      micPrompts:['What would you have made for tea?','Tell me about the garden','What did people call you?','Tell me a story','What did you do all day?'],
+      micHint:'Tap the mic to talk to Nan — the browser will listen',
+      answers: {
+        'Full name':'Margaret Ellen Shaw',
+        'Nickname':'Nan',
+        'Date of birth':'12 March 1952',
+        'Where they grew up':'A terraced street in Leeds, near the park',
+        'Languages or accent':'Yorkshire, broad as anything when she got excited',
+        'Favourite meal':'Sunday roast with all the trimmings',
+        'What they cooked for you':'Onion pie and chip butties on a Friday',
+        'Their tea or coffee order':'Strong tea, two sugars, a splash of milk',
+        'Treats they loved':'Chocolate digestive, dunked but not too long',
+        'Foods they could not stand':'Soggy cabbage and anything fancy',
+        'A recipe in their own words':'Onions, lots of them. Potato. Tea. You know the rest.',
+        'Things they always said':"Make yourself at home, Don't be daft, Put the kettle on",
+        'How they greeted family':'Well hello, love. Get yourself in.',
+        'How they laughed':'A proper belly laugh at her own jokes',
+        'Words of affection':'Love, pet, our kid',
+        'Phrases that annoyed them':'When you said "whatever"',
+        'Daily routine':'Up at six, garden, tea, the crossword, tea again',
+        'Hobbies and habits':'Gardening, crosswords, feeding the birds',
+        'Music they loved':'The Beatles, and anything with a good chorus',
+        'TV and films':'Any murder mystery, twice',
+        'Pets':'A cat called Trevor who ruled the house',
+        'Their work or school':'School secretary for thirty years, loved every minute',
+        'Three words to describe them':'Warm, stubborn, funny',
+        'What made them laugh':'Her own terrible puns',
+        'What made them cross':'Being kept waiting',
+        'How they showed love':'Fed you until you could not move',
+        'Their advice':'Make the most of a good cup of tea',
+        'A favourite memory':'The summer the tomatoes finally ripened and she declared herself a genius',
+        'A family story':'The time she locked herself out in her dressing gown',
+        'A time they were proud':'Watching you get on the bus on your first day of school',
+        'A time they were sad':'She never said much, just made you a sandwich',
+        'What they would say to you now':"I'd tell you to stop worrying and eat something",
+        'What mattered most':'Family, a tidy garden, and fairness',
+        'What they were proud of':'Keeping that garden going through three winters',
+        'What they hoped for you':'That you look after yourself',
+        'How they want to be remembered':'As the one who always put the kettle on'
+      },
+      generic:[
+        'Well, I would say sit yourself down and tell me all about it. I have got the kettle on.',
+        'Aye, I remember that. Or at least I remember the bit where I told you to put your coat on.',
+        'Do not be daft. Come in, love, and start at the beginning — I have got all afternoon.',
+        'You always did ask the questions. Pass me the tea and I will tell you what I think.',
+        'That sounds like you. I would have made you a sandwich and told you to stop worrying.'
+      ]
+    },
+    dad: {
+      name:'Dad (Alan)', voiceName:'Alan Price',
+      facts:'<h3>The sample person</h3><p class="notice">Alan, 68. Drove the buses, pottered in the shed and laughed at his own jokes. Not a real person — all demo data.</p><ul class="notice"><li>Favourite meal: Fish and chips in the car</li><li>Always said: “You’ll be alright”</li><li>Had a Labrador called Bess</li></ul>',
+      thread:[
+        ['ai','Alright, kid? Get yourself in. Kettle is on.'],
+        ['user','What did you do all day?'],
+        ['ai','Pottered in the shed, fixed a tap that was not broken, then watched the match. Busy day.'],
+        ['user','Any advice?'],
+        ['ai',"You'll be alright. Sort the small thing first, and the rest tends to follow."]
+      ],
+      micPrompts:['What did you do all day?','Tell me about the shed','What did people call you?','Any advice?','Did you watch the match?'],
+      micHint:'Tap the mic to talk to Dad — the browser will listen',
+      answers: {
+        'Full name':'Alan David Price',
+        'Nickname':'Dad',
+        'Date of birth':'2 June 1958',
+        'Where they grew up':'A council estate in Sheffield, two streets from the football ground',
+        'Languages or accent':'Sheffield, flat as a pancake and proud of it',
+        'Favourite meal':'Fish and chips, wrapped in paper, eaten in the car',
+        'What they cooked for you':'Bean toasties and a fried egg when your mum was out',
+        'Their tea or coffee order':'Strong tea, no sugar, always in the chipped blue mug',
+        'Treats they loved':'A packet of biscuits hidden in the shed',
+        'Foods they could not stand':'Mushrooms. No negotiation.',
+        'A recipe in their own words':'Bread, butter, beans, cheese. Grill it. Done.',
+        'Things they always said':"There's no problem a cup of tea won't fix, You'll be alright, Don't tell your mother",
+        'How they greeted family':'Alright, kid? Get yourself in.',
+        'How they laughed':'A big guffaw at his own terrible jokes',
+        'Words of affection':'Kid, chuck, little un',
+        'Phrases that annoyed them':'When you said "whatever"',
+        'Daily routine':'Up at five, shed, work, match on Saturday, tea at six',
+        'Hobbies and habits':'Pottering in the shed, fixing things that were not broken, football',
+        'Music they loved':'The Stones, and anything on the radio in the shed',
+        'TV and films':'Any football highlights, watched twice',
+        'Pets':'A Labrador called Bess who ate his slippers',
+        'Their work or school':'Bus driver for thirty years, then a bit of gardening for people',
+        'Three words to describe them':'Quiet, handy, stubborn',
+        'What made them laugh':'His own dad jokes, groans included',
+        'What made them cross':'Wasting good bread',
+        'How they showed love':'Drove you everywhere and never said a word about it',
+        'Their advice':"You'll be alright. Sort the small thing first.",
+        'A favourite memory':'The day you scored your first goal and ran the length of the pitch to tell him',
+        'A family story':'When he tried to fix the washing machine and ended up with a bucket in the kitchen',
+        'A time they were proud':'Watching you leave for university with his old toolbox in the boot',
+        'A time they were sad':'He went quiet and put the kettle on. That was how he did it.',
+        'What they would say to you now':"I'd say you've done fine. Now check the oil in the car.",
+        'What mattered most':'Family, a tidy shed, and keeping your word',
+        'What they were proud of':'Thirty years on the buses without a single complaint',
+        'What they hoped for you':'That you look after yourself and do not worry so much',
+        'How they want to be remembered':'As the one who always had a cup of tea and a spare screwdriver'
+      },
+      generic:[
+        "Alright. Tell me a bit more and I'll have a proper think.",
+        "I've not thought about that in a while. Sit down and talk me through it.",
+        "Aye, I know what you mean. What did you make of it?",
+        'Give me the short version first, then the long one.',
+        'There is no problem a cup of tea won\'t fix. What is the problem?'
+      ]
+    },
+    child: {
+      name:'Ellie (age 9)', voiceName:'Ellie',
+      facts:'<h3>The sample person</h3><p class="notice">Ellie, 9. Asked why about everything, drew dinosaurs and loved her fish Bubbles. Not a real person — all demo data.</p><ul class="notice"><li>Favourite meal: Dinosaur nuggets</li><li>Always asked: “But why?”</li><li>Drew a dragon with sixty teeth</li></ul>',
+      thread:[
+        ['ai','Hi! I made you a picture. It is a dragon with sixty teeth.'],
+        ['user','What did you draw?'],
+        ['ai','A dragon! And a garden for it. There is a tiny house for Bubbles too.'],
+        ['user','Why?'],
+        ['ai','Because dragons need somewhere to sleep. Obviously.']
+      ],
+      micPrompts:['What did you draw?','Why?','Tell me about Bubbles','What is your favourite food?','What did you do at school?'],
+      micHint:'Tap the mic to talk to Ellie — the browser will listen',
+      answers: {
+        'Full name':'Ellie Rose Bennett',
+        'Nickname':'Ellie-Belly (only Mum says it)',
+        'Date of birth':'14 April 2017',
+        'Where they grew up':'A little blue house with a big tree at the bottom of the garden',
+        'Languages or accent':'I say "yeah-no" and nobody knows what I mean',
+        'Favourite meal':'Dinosaur nuggets with lots of ketchup',
+        'What they cooked for you':'I made you a sandwich once. It had too much jam.',
+        'Their tea or coffee order':'Hot chocolate with a million marshmallows',
+        'Treats they loved':'Ice lollies, the blue ones',
+        'Foods they could not stand':'Peas. All of the peas.',
+        'A recipe in their own words':'Bread, jam, more jam. Squish it together. Eat it.',
+        'Things they always said':'Why? But why? One more question?',
+        'How they greeted family':'Mummy! Guess what I drew!',
+        'How they laughed':'I snort when I laugh. Mum says it is rude.',
+        'Words of affection':'Mummy, Daddy, my best friend',
+        'Phrases that annoyed them':'When they say "because I said so"',
+        'Daily routine':'School, then drawing, then one more episode, then bed',
+        'Hobbies and habits':'Drawing dinosaurs, reading about space, asking why',
+        'Music they loved':'The song in the car that we sing too loud',
+        'TV and films':'The one with the dinosaurs. I watched it four times.',
+        'Pets':'A fish called Bubbles. He looks at me.',
+        'Their work or school':'Year 4. My favourite bit is painting.',
+        'Three words to describe them':'Curious, noisy, nice',
+        'What made them laugh':'When Daddy tries to do a roar and coughs',
+        'What made them cross':'When someone takes my purple crayon',
+        'How they showed love':'I draw pictures and put them on your pillow',
+        'Their advice':'Always ask why. That is how you learn stuff.',
+        'A favourite memory':'When we found a massive slug in the garden and I made it a house out of a leaf',
+        'A family story':'The time I put a dinosaur in the freezer to keep it safe',
+        'A time they were proud':'I got the whole skeleton right in my drawing',
+        'A time they were sad':'When Bubbles looked at me and I thought he was poorly',
+        'What they would say to you now':'I made you a picture. It is a dragon. It is for you.',
+        'What mattered most':'My family, my crayons, and Bubbles',
+        'What they were proud of':'My dinosaur drawing with all the bones',
+        'What they hoped for you':'That you come and look at my picture',
+        'How they want to be remembered':'As the girl who always asked why?'
+      },
+      generic:[
+        "I'm nine. I might need a minute to think about that.",
+        "That's a really good question. Why do you ask?",
+        'I drew a picture of that once. It had wings.',
+        'Ask me again but with more words, then I can answer properly.',
+        'I think the answer is dinosaurs. Usually it is.'
+      ]
     }
   };
+  var currentSampleKey = 'nan';
+  function currentSample(){ return SAMPLES[currentSampleKey]; }
 
   var q = document.getElementById('questionnaire');
   FIELD_GROUPS.forEach(function(g){
@@ -411,7 +577,7 @@ p{margin:0 0 12px}
 
   function fillSampleAnswers(){
     Array.prototype.forEach.call(q.querySelectorAll('input,textarea'), function(el){
-      el.value = SAMPLE.answers[el.dataset.label] || '';
+      el.value = currentSample().answers[el.dataset.label] || '';
     });
   }
 
@@ -419,7 +585,7 @@ p{margin:0 0 12px}
   function checkConsent(){
     var n = boxes.filter(function(b){ return b.checked; }).length;
     document.getElementById('toAnswers').disabled = n < 5;
-    document.getElementById('consentHint').textContent = n < 5 ? (5-n)+' more to tick.' : 'Thank you. She can change her mind at any time.';
+    document.getElementById('consentHint').textContent = n < 5 ? (5-n)+' more to tick.' : 'Thank you. They can change their mind at any time.';
   }
   boxes.forEach(function(b){ b.addEventListener('change', checkConsent); });
 
@@ -545,7 +711,7 @@ p{margin:0 0 12px}
     u.pitch = 1.0;
     speakingBtn = btn || null;
     if(btn) btn.textContent='■ Stop demo voice';
-    voiceNote.textContent='🔊 '+(chosen?chosen.name:'Browser voice')+' speaking now — browser demo, not Margaret’s real voice.';
+    voiceNote.textContent='🔊 '+(chosen?chosen.name:'Browser voice')+' speaking now — browser demo, not '+currentSample().voiceName+'’s real voice.';
     u.onend = u.onerror = function(){
       if(speakingBtn===btn) speakingBtn=null;
       if(btn) btn.textContent='🔊 Hear this reply (browser demo voice)';
@@ -573,30 +739,31 @@ p{margin:0 0 12px}
 
   function loadSampleThread(){
     thread.innerHTML='';
-    bubble('ai','Hello love. Put the kettle on, and tell me what you have been up to.');
-    bubble('user','What would you have made for tea?');
-    bubble('ai',"You know me — something with onions in it, and far too much pepper. I would have told you to sit down while I did it.");
-    bubble('user','And how are the tomatoes?');
-    bubble('ai','Finally ripe, thank goodness. I have told the whole street I am a genius. Do not tell them otherwise.');
+    currentSample().thread.forEach(function(turn){ bubble(turn[0], turn[1]); });
   }
 
   function markSampleVoice(){
     voiceStatus.dataset.ready='1'; voiceStatus.className='ok';
-    voiceStatus.textContent='Sample voice ready (demo only) — Margaret Shaw';
+    voiceStatus.textContent='Sample voice ready (demo only) — '+currentSample().voiceName;
     waveEl.classList.add('live');
   }
 
-  function openSample(){
+  function openSample(who){
+    currentSampleKey = SAMPLES[who] ? who : 'nan';
+    var s = currentSample();
     isSample = true;
     boxes.forEach(function(b){ b.checked = true; }); checkConsent();
     fillSampleAnswers();
     markSampleVoice();
-    document.getElementById('memName').textContent = 'Nan (Margaret)';
+    document.getElementById('memName').textContent = s.name;
     document.getElementById('sampleTag').style.display = 'inline-block';
-    document.getElementById('sampleFacts').style.display = 'block';
+    var facts = document.getElementById('sampleFacts');
+    facts.innerHTML = s.facts;
+    facts.style.display = 'block';
     document.getElementById('exitSample').style.display = 'inline';
+    micLabel.textContent = s.micHint;
     capStep(4);
-    document.getElementById('rvAnswers').textContent = Object.keys(SAMPLE.answers).length + ' fields answered (sample)';
+    document.getElementById('rvAnswers').textContent = Object.keys(s.answers).length + ' fields answered (sample)';
     document.getElementById('rvVoice').textContent = 'Sample voice ready (demo only)';
     loadSampleThread();
     showMemorial();
@@ -609,7 +776,7 @@ p{margin:0 0 12px}
     Array.prototype.forEach.call(q.querySelectorAll('input,textarea'), function(el){ el.value = ''; });
     voiceStatus.dataset.ready=''; voiceStatus.className='notice'; voiceStatus.textContent='No sample chosen yet.';
     waveEl.classList.remove('live');
-    document.getElementById('memName').textContent = 'Mum';
+    document.getElementById('memName').textContent = 'A loved one';
     document.getElementById('sampleTag').style.display = 'none';
     document.getElementById('sampleFacts').style.display = 'none';
     document.getElementById('exitSample').style.display = 'none';
@@ -716,8 +883,161 @@ p{margin:0 0 12px}
       'Well, look who it is. Make yourself at home — you know where everything is.'
     ]}
   ];
+
+  var DAD_TOPICS = [
+    { tag:'dad-identity', re:/\b(name|who|call|called|alan|dad|yourself)\b/i, replies:[
+      'Alan David Price — but you called me Dad, and that was the one that mattered.',
+      'Dad. Anything else sounds like I am in trouble.',
+      'Alan on the forms, Dad everywhere else. That is how it worked.'
+    ]},
+    { tag:'dad-tea', re:/\b(tea|kettle|coffee|drink|cuppa|brew|mug)\b/i, replies:[
+      'Strong tea, no sugar, chipped blue mug. Always.',
+      'Kettle is on. Sit down and tell me what has happened.',
+      'Tea fixes most things. The rest needs a screwdriver.'
+    ]},
+    { tag:'dad-food', re:/\b(food|cook|cooking|recipe|dinner|toastie|biscuit|fish|chips|eat|hungry|bread)\b/i, replies:[
+      'Bean toasties and a fried egg. Do not tell your mother.',
+      'Fish and chips, wrapped in paper, eaten in the car. Best tea there is.',
+      'Bread, butter, beans, cheese. Grill it. Done. No measuring.',
+      'There is a packet of biscuits in the shed. That is all you need to know.'
+    ]},
+    { tag:'dad-shed', re:/\b(work|job|bus|shed|fix|repair|tool|office)\b/i, replies:[
+      'Thirty years on the buses. I knew every route and every regular by name.',
+      'The shed was my office. I fixed things that were not broken just to have an excuse to be out there.',
+      'I drove the number 41. Half the city waved at me. I pretended not to enjoy it.'
+    ]},
+    { tag:'dad-football', re:/\b(football|match|team|sheffield|sport|goal)\b/i, replies:[
+      'Saturday was the match. Rain or shine, I was there.',
+      'I followed Sheffield since I was a lad. Do not tell me you have forgotten that.',
+      'A good match and a cup of tea — that was my weekend sorted.'
+    ]},
+    { tag:'dad-dog', re:/\b(dog|bess|pet|animal|slipper)\b/i, replies:[
+      'Bess ate my slippers once and looked me right in the eye. Could not stay cross.',
+      'We had a Labrador called Bess. She ran the house, I just paid the bills.'
+    ]},
+    { tag:'dad-memory', re:/\b(remember|memory|story|stories|proud|university|washer|bucket)\b/i, replies:[
+      'You scored your first goal and ran the length of the pitch to tell me. Best day.',
+      'When you left for university I put my old toolbox in the boot. Did not say a word.',
+      'Thirty years on the buses, not one complaint. That is the one I was proud of.'
+    ]},
+    { tag:'dad-funny', re:/\b(laugh|joke|jokes|funny|humour|humor|guffaw)\b/i, replies:[
+      'A big guffaw at my own jokes. Your mother groaned, which made it worse.',
+      'Quiet, handy, stubborn. That is what I wrote down.',
+      'I told terrible jokes and laughed at them. You lot never did, but you listened.'
+    ]},
+    { tag:'dad-place', re:/\b(where|grew|home|house|street)\b/i, replies:[
+      'Sheffield, flat as a pancake and proud of it. Two streets from the ground.',
+      'Home was the house with the shed at the bottom of the garden. That is where I went to think.'
+    ]},
+    { tag:'dad-missing', re:/\b(miss|sad|gone|alone|sorry|love you|hug)\b/i, replies:[
+      'I know, kid. I am here as long as you want. Put the kettle on and start at the beginning.',
+      'Do not be sad. I had a good life, and you were the best of it. Now check the oil in the car.',
+      'I would have driven over and sat in the car with you. That is how I did it.'
+    ]},
+    { tag:'dad-thanks', re:/\b(thank|thanks|cheers)\b/i, replies:[
+      'Do not be daft. You are welcome.',
+      'That is what I am here for. Ask me anything else.',
+      'No need to thank me. I would do it again.'
+    ]},
+    { tag:'dad-howareyou', re:/\b(how are you|how do you feel|you ok|you okay|alright)\b/i, replies:[
+      'I am here, kid. Same as ever, more or less.',
+      'Never better. Well — I would say that, would I not?',
+      'Alright. You look like you could do with a sit-down and a tea.'
+    ]},
+    { tag:'dad-advice', re:/\b(advice|worry|worried|stressed|stress|what should|help me|wrong)\b/i, replies:[
+      'You will be alright. Sort the small thing first.',
+      'Check the oil, make a cup of tea, then decide. Usually sorts itself.',
+      'Do not worry so much. Family first, everything else can wait.'
+    ]},
+    { tag:'dad-hello', re:/\b(hello|hi|hey|morning|good evening|good afternoon)\b/i, replies:[
+      'Alright, kid? Get yourself in.',
+      'Hello, chuck. Sit down, kettle is on.',
+      'Morning. What have you been up to?'
+    ]}
+  ];
+
+  var CHILD_TOPICS = [
+    { tag:'child-identity', re:/\b(name|who|call|called|ellie|yourself)\b/i, replies:[
+      'I am Ellie. Ellie-Belly if you are Mum. Do not tell anyone.',
+      'Ellie Rose. That is my whole name. I like the Rose bit.',
+      'You can call me Ellie. My best friend calls me El.'
+    ]},
+    { tag:'child-dino', re:/\b(dinosaur|dinos|dragon|animal|toy|favourite|favorite)\b/i, replies:[
+      'Dinosaurs! The big one with the long neck is my favourite. It eats leaves.',
+      'I drew a dragon with sixty teeth. Sixty! I counted them.',
+      'I put my toy dinosaur in the freezer to keep it safe. It got a bit cold.'
+    ]},
+    { tag:'child-art', re:/\b(draw|drawing|picture|paint|painting|crayon|art|colour|color)\b/i, replies:[
+      'I made you a picture. It is on your pillow. It is a dragon.',
+      'Purple is my best crayon. Nobody is allowed to take it.',
+      'I drew the whole skeleton. Every bone. Miss said wow.'
+    ]},
+    { tag:'child-school', re:/\b(school|year|teacher|learn|homework|class)\b/i, replies:[
+      'I am in Year 4. Painting is my favourite bit.',
+      'We learned about space. The moon is made of cheese? I asked my teacher and she laughed.',
+      'Homework is boring but drawing is not.'
+    ]},
+    { tag:'child-why', re:/\b(why|question|curious|how come)\b/i, replies:[
+      'Because that is how you learn stuff! My mum says I ask too many whys. I do not.',
+      'Why? But why? One more question?',
+      'I do not know. Let us find out together.'
+    ]},
+    { tag:'child-advice', re:/\b(advice|worry|worried|stressed|what should|help me|wrong)\b/i, replies:[
+      'Always ask why. That is how you learn stuff.',
+      'If something is wrong, tell a grown-up you trust. That is what my mum says.',
+      'Take a big breath, then draw a picture. Drawing helps me think.'
+    ]},
+    { tag:'child-food', re:/\b(food|tea|snack|nugget|jam|sandwich|pea|hungry|eat|chocolate|lolly)\b/i, replies:[
+      'Dinosaur nuggets and LOTS of ketchup. No peas. Please.',
+      'I made you a sandwich once. It had too much jam but it was nice.',
+      'Bread, jam, more jam. Squish it. Eat it. Easy.',
+      'Hot chocolate with a million marshmallows. The million is important.'
+    ]},
+    { tag:'child-fish', re:/\b(fish|bubbles|pet|cat|dog|slug)\b/i, replies:[
+      'Bubbles is my fish. He looks at me. I think he knows things.',
+      'Bubbles waved at me yesterday. Well, he swam. Same thing.',
+      'I made Bubbles a house out of a leaf in the garden.'
+    ]},
+    { tag:'child-play', re:/\b(bike|play|game|fun|funny|laugh|roar)\b/i, replies:[
+      'When Daddy tries to do a roar he coughs. Every time.',
+      'I snort when I laugh. Mum says it is rude but I cannot stop.',
+      'Let us play dragons. You can be the small one.'
+    ]},
+    { tag:'child-memory', re:/\b(remember|memory|story|stories|proud|freezer|skeleton)\b/i, replies:[
+      'We found a massive slug and I made it a house out of a leaf.',
+      'I put a dinosaur in the freezer to keep it safe. It got a bit cold.',
+      'I got the whole skeleton right in my drawing. Every bone.'
+    ]},
+    { tag:'child-sad', re:/\b(miss|sad|lonely|scared|hug|love you|sorry)\b/i, replies:[
+      'I made you a picture. It is for you. You can keep it.',
+      'If you are sad, we can draw together. I like drawing with people.',
+      'My favourite person is you. That is all I have to say.',
+      'I would give you a big hug and tell you my dragon joke.'
+    ]},
+    { tag:'child-thanks', re:/\b(thank|thanks|cheers)\b/i, replies:[
+      'You are welcome! Do you want to see my picture?',
+      'That is okay! I like making people smile.',
+      'No problem. I have got lots more drawings.'
+    ]},
+    { tag:'child-hello', re:/\b(hello|hi|hey|morning|good evening|alright|how are you)\b/i, replies:[
+      'I am good! I drew four pictures today.',
+      'Hello! Guess what? I found a massive slug.',
+      'I am brilliant. Well, nearly. I cannot do the last bit of my drawing.'
+    ]},
+    { tag:'child-routine', re:/\b(bed|sleep|night|routine|day)\b/i, replies:[
+      'School, then drawing, then one more episode, then bed. Every day.',
+      'Mum says one more episode, then bed. It is always bed.',
+      'I get up early because the dragon needs breakfast.'
+    ]}
+  ];
+
+  SAMPLES.nan.topics = SAMPLE_TOPICS;
+  SAMPLES.dad.topics = DAD_TOPICS;
+  SAMPLES.child.topics = CHILD_TOPICS;
+
   function pick(tag, replies){
-    var n = rotators[tag] || 0; rotators[tag] = n + 1;
+    var key = currentSampleKey + ':' + tag;
+    var n = rotators[key] || 0; rotators[key] = n + 1;
     return replies[n % replies.length];
   }
   function replyFor(text){
@@ -726,17 +1046,12 @@ p{margin:0 0 12px}
       return 'I am an AI memorial, and I want you safe. Please ring Samaritans on 116 123 or text SHOUT to 85258. You should not have to face this on your own.';
     }
     if(isSample){
-      for(var i=0;i<SAMPLE_TOPICS.length;i++){
-        var t=SAMPLE_TOPICS[i];
+      var topics = currentSample().topics;
+      for(var i=0;i<topics.length;i++){
+        var t=topics[i];
         if(t.re.test(text)) return pick(t.tag, t.replies);
       }
-      return pick('generic', [
-        'Well, I would say sit yourself down and tell me all about it. I have got the kettle on.',
-        'Aye, I remember that. Or at least I remember the bit where I told you to put your coat on.',
-        'Do not be daft. Come in, love, and start at the beginning — I have got all afternoon.',
-        'You always did ask the questions. Pass me the tea and I will tell you what I think.',
-        'That sounds like you. I would have made you a sandwich and told you to stop worrying.'
-      ]);
+      return pick('generic', currentSample().generic);
     }
     return pick('plain', [
       'I remember you saying that. Come in, sit down — I will put the kettle on and we can talk about it properly.',
@@ -770,13 +1085,13 @@ p{margin:0 0 12px}
     };
     rec.onend = function(){
       mic.classList.remove('on'); micOn=false;
-      micLabel.textContent='Tap the mic to speak — the browser will listen';
+      micLabel.textContent=isSample ? currentSample().micHint : 'Tap the mic to speak — the browser will listen';
     };
   } else {
     micLabel.textContent='Simulated mic — or type below';
   }
-  var demoPrompts=['What would you have made for tea?','Tell me about the garden','What did people call you?','Tell me a story','What did you do all day?'];
   var demoPromptIndex=0;
+  function demoPrompts(){ return currentSample().micPrompts; }
   mic.addEventListener('click', function(){
     if(rec){
       if(micOn){ rec.stop(); return; }
@@ -787,18 +1102,19 @@ p{margin:0 0 12px}
     }
     mic.classList.toggle('on');
     var on=mic.classList.contains('on');
-    micLabel.textContent = on ? 'Listening… say something about her day' : 'Simulated mic — or type below';
+    micLabel.textContent = on ? 'Listening… say something now' : (isSample ? currentSample().micHint : 'Simulated mic — or type below');
     if(!on){
-      var said = demoPrompts[demoPromptIndex++ % demoPrompts.length];
+      var prompts = demoPrompts();
+      var said = prompts[demoPromptIndex++ % prompts.length];
       bubble('user','（simulated: '+said+'）');
       window.setTimeout(function(){ bubble('ai',replyFor(said)); },500);
     }
   });
   function seedThread(){
     thread.innerHTML='';
-    bubble('ai','Hello love. Put the kettle on, and tell me what you have been up to.');
+    bubble('ai','Hello. Tell me what you have been up to.');
     bubble('user','What would you have made for tea?');
-    bubble('ai',"You know me — something with onions in it, and far too much pepper. I'd have told you to sit down while I did it.");
+    bubble('ai','I would have made something proper and told you to sit down. Tell me the rest.');
     defaultThreadHTML = thread.innerHTML;
   }
   seedThread();
